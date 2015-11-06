@@ -5,6 +5,9 @@ import re
 import signal
 
 _ws = None
+_ws_addr = "127.0.0.1"
+_ws_port = 9395
+
 _command_handlers = {}
 dock = None
 
@@ -155,18 +158,30 @@ def _update():
     pass
 
 def _ws_start():
-    global _ws
+    global _ws, _ws_addr, _ws_port
 
     #websocket.enableTrace(True)
 
-    _ws = websocket.WebSocketApp("ws://127.0.0.1:9393",
+    _ws = websocket.WebSocketApp("ws://{}:{}".format(_ws_addr, _ws_port),
                                 on_message = _ws_on_message,
                                 on_error   = _ws_on_error,
                                 on_close   = _ws_on_close)
     _ws.on_open = _ws_on_open
     _ws.run_forever()        
 
+def stop():
+    global _ws
+    _ws.close()
+
 def run():
+    global _ws_addr, _ws_port
+    
+    if address is not None:
+        _ws_addr = address
+        
+    if port is not None:
+        _ws_port = port
+    
     _thread = threading.Thread(target=_ws_start)
     _thread.start()
 
