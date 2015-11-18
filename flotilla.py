@@ -117,6 +117,8 @@ _module_handlers = {
     'rainbow': Rainbow 
 }
 
+supported_devices = _module_handlers.keys()
+
 modules = [None for x in range(8)]
 
 def _create_new(channel, device_name):
@@ -258,6 +260,7 @@ def _ws_start():
                                 on_close   = _ws_on_close)
     _ws.on_open = _ws_on_open
     _ws.run_forever()        
+    print("Websocket Stopped...")
 
 def stop():
     global _ws, running
