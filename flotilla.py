@@ -88,7 +88,24 @@ class Colour(Module):
     pass
 
 class Matrix(Module):
-    pass
+    def __init__(self, channel):
+        self.grid = [0] * 8
+        Module.__init__(self, channel, 'matrix')
+
+    def set_pixel(self, x, y, state):
+        if state:
+            self.grid[x] |= (1 << y)
+        else:
+            self.grid[x] &= ~(1 << y)
+
+        self.update()
+
+    def update(self):
+        self.send(",".join([str(r) for r in self.grid]))
+
+    def clear(self):
+        self.grid = [0] * 8
+        self.update()
 
 class Number(Module):
     pass
