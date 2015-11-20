@@ -13,15 +13,30 @@ class Dock():
         self.serial = serial
 
 class Module():
-    def __init__(self, channel, name):
-        self.channel = channel
-        self.name = name
+    name = 'module'
+    _channel_names = [
+        'eight',
+        'seven',
+        'six',
+        'five',
+       'four',
+        'three',
+        'two',
+        'one'
+    ]
+
+    def __init__(self, channel):
+        self.channel_index = channel
         self.connected = False
         self.data = []
         self.host = 0
 
     def is_a(self, module_type):
         return isinstance(self, module_type)
+
+    @property
+    def channel(self):
+        return self._channel_names[self.channel_index]
 
     def connect(self):
         self.connected = True
@@ -30,7 +45,7 @@ class Module():
         self.connected = False
 
     def send(self, data):
-        send("h:{} d:s {} {}".format(self.host,self.channel,data))
+        send("h:{} d:s {} {}".format(self.host,self.channel_index,data))
 
     def set_name(self, name):
         self.name = name
@@ -43,34 +58,34 @@ class Module():
         return changed
 
 class Dial(Module):
-    def __init__(self, channel):
-        Module.__init__(self, channel, 'dial')
+    name = 'dial'
 
     @property
     def position(self):
         return int(self.data[0])
 
 class Slider(Module):
-    def __init__(self, channel):
-        Module.__init__(self, channel, 'slider')
+    name = 'slider'
 
     @property
     def position(self):
         return int(self.data[0])
 
 class Motion(Module):
-    pass
+    name = 'motion'
 
 class Joystick(Module):
-    pass
+    name = 'joystick'
 
 class Motor(Module):
-    pass
+    name = 'motor'
 
 class Weather(Module):
-    pass
+    name = 'weather'
 
 class Rainbow(Module): 
+    name = 'rainbow'
+
     def set_rgb(self, r, g, b):
         self.send(",".join([str(r),str(g),str(b)] * 5))
     
@@ -78,37 +93,49 @@ class Rainbow(Module):
         self.send(",".join([str(x) for x in rainbow]))
 
 class Light(Module):
-    pass
+    name = 'light'
 
 class Touch(Module):
-    def __init__(self, channel):
-        Module.__init__(self, channel, 'touch')
+    name = 'touch'
 
 class Colour(Module):
-    pass
+    name = 'colour'
 
 class Matrix(Module):
+    name = 'matrix'
+
     def __init__(self, channel):
         self.grid = [0] * 8
-        Module.__init__(self, channel, 'matrix')
+        self.brightness = 30
+        Module.__init__(self, channel)
 
     def set_pixel(self, x, y, state):
         if state:
-            self.grid[x] |= (1 << y)
+            self.grid[7-x] |= (1 << y)
         else:
-            self.grid[x] &= ~(1 << y)
+            self.grid[7-x] &= ~(1 << y)
 
-        self.update()
+    def set_brightness(self, b):
+        self.brightness = b
 
     def update(self):
-        self.send(",".join([str(r) for r in self.grid]))
+        self.send("{pixels},{brightness}".format(
+            pixels = ",".join([str(r) for r in self.grid]),
+            brightness = self.brightness
+        ))
 
     def clear(self):
         self.grid = [0] * 8
-        self.update()
 
 class Number(Module):
-    pass
+    name = 'number'
+
+def module(channel_name):
+    module_index = Module._channel_names.index(channel_name)
+    return modules[module_index]
+
+def all(module_type):
+    return [module for module in modules if module is not None and  module.is_a(module_type)]
 
 _ws = None
 _ws_addr = "127.0.0.1"
@@ -138,6 +165,11 @@ supported_devices = _module_handlers.keys()
 
 modules = [None for x in range(8)]
 
+def _update_shortcuts():
+    for channel_name in Module._channel_names:
+        module_index = Module._channel_names.index(channel_name)
+        globals()[channel_name] = modules[module_index]
+
 def _create_new(channel, device_name):
     if device_name not in _module_handlers.keys():
         raise TypeError("{} not supported!".format(device_name))
@@ -145,6 +177,24 @@ def _create_new(channel, device_name):
     module = _module_handlers[device_name](channel)
 
     return module
+
+def on_connect(handler=None):
+    if handler is  None:
+        def decorate(handler):
+            global _on_connect
+            _on_connect = handler
+        return decorate
+    else:
+        _on_connect = handler
+
+def on_disconnect(handler=None):
+    if handler is None:
+        def decorate(handler):
+            global _on_disconnect
+            _on_disconnect = handler
+        return decorate
+    else:
+        _on_disconnect = handler
 
 def on(device, handler=None):
     if type(device) is int:
@@ -184,12 +234,29 @@ def _flotilla_on_command(channel, device, command, data):
 
     if command == "c":
         #print("Module connected: {} {}".format(device, channel))
+        if modules[channel] is not None:
+            return
+
         modules[channel] = _create_new(channel, device)
+        _update_shortcuts()
+        if callable(_on_connect):
+            print("Calling connect handler")
+            _on_connect(channel, modules[channel])
+            #t = threading.Thread(_on_connect,args=(channel, modules[channel]))
+            #t.start()
         return
 
     if command == "d":
         modules[channel].disconnect()
+        
+        if callable(_on_disconnect):
+            print("Calling disconnect handler")
+            _on_disconnect(channel, modules[channel])
+            #t = threading.Thread(_on_disconnect,args=(channel, modules[channel]))
+            #t.start()
+
         modules[channel] = None
+        _update_shortcuts()
         return 
     
     if command == "u":
@@ -297,7 +364,11 @@ def run(address=None, port=None):
     _thread.start()
     
     running = True
-    atexit.register(stop)
 
 def wait():
     signal.pause()
+
+_on_connect = None
+_on_disconnect = None
+
+atexit.register(stop)
