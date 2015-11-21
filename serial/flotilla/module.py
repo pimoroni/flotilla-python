@@ -11,13 +11,13 @@ class Module:
         'one'
     ]
 
-    def __init__(self, channel):
+    def __init__(self, channel, client):
         self.channel_index = channel
+        self.client = client
         self.data = []
 
     def send(self, data):
-        data = ",".join([str(d) for d in data])
-        packet = "s {} {}".format(self.channel_index, data)
+        self.client.module_update(self.channel_index, ",".join([str(d) for d in data]))
 
     def set_data(self, data):
         changed = False
@@ -27,7 +27,7 @@ class Module:
         return changed
 
     def is_a(self, module_type):
-        return instance(self, module_type)
+        return isinstance(self, module_type)
 
 
     @property

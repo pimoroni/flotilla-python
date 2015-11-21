@@ -1,6 +1,6 @@
-import module
+from .module import Module
 
-class Dial(module.Module):
+class Dial(Module):
     name = 'dial'
     
     @property

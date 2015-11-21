@@ -1,6 +1,6 @@
-import module
+from .module import Module
 
-class Slider(module.Module):
+class Slider(Module):
     name = 'slider'
     
     @property
