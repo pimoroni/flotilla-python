@@ -4,14 +4,18 @@ import serial
 import atexit
 import time
 
-from .module import Module
+from .module import Module, NoModule
 from .dial import Dial
 from .slider import Slider
 from .motion import Motion
 from .number import Number
 from .matrix import Matrix
 from .joystick import Joystick
+from .motor import Motor
 
+LANG_REQUIRES = "Oh no! I need a {module_type} on channel {channel}"
+LANG_FOUND = "Yay! I've found a {module_type} on channel {channel}"
+LANG_READY = "Everything connected properly. Let's go!"
 
 class Client:
     _module_handlers = {
@@ -24,17 +28,32 @@ class Client:
         # 'light': Light,
         # 'colour': Colour,
         'joystick': Joystick,
-        # 'motor': Motor,
+        'motor': Motor,
         # 'weather': Weather,
         # 'rainbow': Rainbow
     }
+    _channel_names = [
+        'eight',
+        'seven',
+        'six',
+        'five',
+        'four',
+        'three',
+        'two'
+        'one'
+    ]
 
-    def __init__(self, port='/dev/tty.usbmodem1431', baud=9600):
+    def __init__(self, port='/dev/tty.usbmodem1411', baud=9600, requires=None):
         self.num_channels = 8
         self.port = port
         self.baud = baud
         self.running = True
-        self.modules = [Module(x, self) for x in range(self.num_channels)]
+        self._modules = [NoModule() for x in range(self.num_channels)]
+
+        self.ready = False
+
+        self._requires = requires
+        self._requirements_met = self._requires is None
 
         self.dock_name = None
         self.dock_user = None
@@ -54,6 +73,44 @@ class Client:
 
         time.sleep(0.5)
         self.enumerate_devices()
+        time.sleep(1)
+
+        self._check_requirements_and_launch_loop()
+        self.ready = True
+
+    def _check_requirements_and_launch_loop(self):
+        if not self._required_modules_connected():
+            for channel in self._requires.keys():
+                module_type = self._requires[channel]
+                channel_index = self._channel_names.index(channel)
+
+                if not self._modules[channel_index].is_a(module_type):
+                    print(LANG_REQUIRES.format(
+                        module_type=module_type.name,
+                        channel=channel
+                    ))
+                else:
+                    print(LANG_FOUND.format(
+                        module_type=module_type.name,
+                        channel=channel
+                    ))
+
+            while not self._required_modules_connected():
+                time.sleep(0.5)
+        print(LANG_READY)
+
+    def _required_modules_connected(self):
+        self._requirements_met = True
+        if self._requires is None:
+            return True
+
+        for channel in self._requires.keys():
+            module_type = self._requires[channel]
+            channel_index = self._channel_names.index(channel)
+            if not self._modules[channel_index].is_a(module_type):
+                self._requirements_met = False
+
+        return self._requirements_met
 
     def _serial_write(self, data):
         self.serial.write(bytes(data + "\r", "ascii"))
@@ -74,6 +131,46 @@ class Client:
 
     def module_update(self, channel_index, data):
         self._serial_write("s {} {}".format(channel_index, data))
+
+    @property
+    def channel_one(self):
+        return self._modules[self._channel_names.index('one')]
+
+    @property
+    def channel_one(self):
+        return self._modules[self._channel_names.index('one')]
+
+    @property
+    def channel_two(self):
+        return self._modules[self._channel_names.index('two')]
+
+    @property
+    def channel_three(self):
+        return self._modules[self._channel_names.index('three')]
+
+    @property
+    def channel_four(self):
+        return self._modules[self._channel_names.index('four')]
+
+    @property
+    def channel_five(self):
+        return self._modules[self._channel_names.index('five')]
+
+    @property
+    def channel_six(self):
+        return self._modules[self._channel_names.index('six')]
+
+    @property
+    def channel_seven(self):
+        return self._modules[self._channel_names.index('seven')]
+
+    @property
+    def available(self):
+        modules = {}
+        for x in range(8):
+            if self._modules[x].is_a(Module):
+                modules[self._channel_names[x]] = self._modules[x]
+        return modules
 
     @property
     def supported_modules(self):
@@ -114,22 +211,22 @@ class Client:
 
     def _handle_module_command(self, channel, device, command, data):
         if command == "u":
-            if not self.modules[channel].is_a(Module):
-                self.modules[channel].set_data(data)
+            if not self._modules[channel].is_a(NoModule):
+                self._modules[channel].set_data(data)
             return
 
         if command == "c":
-            if self.modules[channel].is_a(Module):
-                self.modules[channel] = self._new_module(channel, device)
+            if self._modules[channel].is_a(NoModule):
+                self._modules[channel] = self._new_module(channel, device)
                 if callable(self._on_connect):
-                    self._on_connect(channel, self.modules[channel])
+                    self._on_connect(channel, self._modules[channel])
             return
 
         if command == "d":
-            if not self.modules[channel].is_a(Module):
+            if not self._modules[channel].is_a(NoModule):
                 if callable(self._on_disconnect):
-                    self._on_disconnect(channel, self.modules[channel])
-                self.modules[channel] = None
+                    self._on_disconnect(channel, self._modules[channel])
+                self._modules[channel] = NoModule()
             return
 
     def _new_module(self, channel, device_name):

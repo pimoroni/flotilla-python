@@ -19,18 +19,20 @@ NUM_T = 128
 6 = brightness
 """
 
+
 class Number(Module):
     name = 'number'
     _numbers = [
         NUM_TL + NUM_BL + NUM_T + NUM_B + NUM_TR + NUM_BR,
+        NUM_TR + NUM_BR,
         NUM_BL + NUM_T + NUM_B + NUM_TR + NUM_MID,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0,
-        0
+        NUM_T + NUM_B + NUM_TR + NUM_BR + NUM_MID,
+        NUM_TR + NUM_TL + NUM_MID + NUM_BR,
+        NUM_TL + NUM_BR + NUM_MID + NUM_T + NUM_B,
+        NUM_T + NUM_MID + NUM_B + NUM_BL + NUM_BR + NUM_TL,
+        NUM_T + NUM_TR + NUM_BR,
+        NUM_TL + NUM_BL + NUM_T + NUM_B + NUM_TR + NUM_BR + NUM_MID,
+        NUM_TL + NUM_T + NUM_TR + NUM_BR + NUM_MID
     ]
 
     def __init__(self, channel, client):
@@ -40,6 +42,14 @@ class Number(Module):
 
         self.colon = 0
         self.apostrophe = 0
+
+    def set_number(self, number):
+        if type(number) is not int:
+            raise TypeError("Number must be an integer")
+
+        number = [int(x) for x in list(str(number))]
+        for x in range(len(number)):
+            self.set_digit(x, number[x])
 
     def set_digit(self, digit, value):
         if 0 > value > 9:
@@ -53,5 +63,5 @@ class Number(Module):
         self.send(self.digits + [self.colon, self.apostrophe, self.brightness])
 
     def clear(self):
-        self.pixels = [0] * 8
+        self.digits = [0] * 4
         return self
