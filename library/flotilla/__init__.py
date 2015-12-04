@@ -1,6 +1,7 @@
 import threading
 import re
 import serial
+import serial.tools.list_ports
 import atexit
 import time
 
@@ -12,6 +13,9 @@ from .number import Number
 from .matrix import Matrix
 from .joystick import Joystick
 from .motor import Motor
+
+VID = "16d0"
+PID = "08c3"
 
 LANG_REQUIRES = "Oh no! I need a {module_type} on channel {channel}"
 LANG_FOUND = "Yay! I've found a {module_type} on channel {channel}"
@@ -43,7 +47,16 @@ class Client:
         'one'
     ]
 
-    def __init__(self, port='/dev/tty.usbmodem1411', baud=9600, requires=None):
+    def __init__(self, port=None, baud=9600, requires=None):
+        if port is None:
+            ports = serial.tools.list_ports.comports()
+            for p in ports:
+                if "USB VID:PID={vid}:{pid}".format(vid=VID,pid=PID) in p:
+                    port = p[0]
+
+        if port is None:
+            raise AttributeError("No port specified and none found!")
+
         self.num_channels = 8
         self.port = port
         self.baud = baud

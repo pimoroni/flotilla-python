@@ -3,8 +3,7 @@ import time
 
 
 client = flotilla.Client(
-    port='/dev/tty.usbmodem1411',
-    requires={
+   requires={
         'four': flotilla.Matrix,
         'seven': flotilla.Matrix,
         'five': flotilla.Number,
