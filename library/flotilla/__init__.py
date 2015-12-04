@@ -4,6 +4,7 @@ import serial
 import serial.tools.list_ports
 import atexit
 import time
+from subprocess import check_output
 
 from .module import Module, NoModule
 from .dial import Dial
@@ -48,6 +49,14 @@ class Client:
     ]
 
     def __init__(self, port=None, baud=9600, requires=None):
+        pid = check_output(["pidof","flotilla"]).strip()
+        pid = int(pid)
+
+        if pid > 0:
+            raise AttributeError("""Flotilla server is running!
+Please stop it before using the Python API.
+Try: kill {pid}""".format(pid=pid))
+
         if port is None:
             ports = serial.tools.list_ports.comports()
             for p in ports:
