@@ -1,11 +1,10 @@
-import module
+from .module import Module
 
-
-class Rainbow(module.Module):
+class Rainbow(Module):
     name = 'rainbow'
 
-    def __init__(self, channel):
-        module.Module.__init__(self, channel)
+    def __init__(self, channel, client):
+        Module.__init__(self, channel, client)
         self.pixels = [(0, 0, 0)] * 5
 
     def set_pixel(self, x, r, g, b):

@@ -4,7 +4,7 @@ import serial
 import serial.tools.list_ports
 import atexit
 import time
-from subprocess import check_output
+from subprocess import check_output, CalledProcessError
 
 from .module import Module, NoModule
 from .dial import Dial
@@ -14,6 +14,8 @@ from .number import Number
 from .matrix import Matrix
 from .joystick import Joystick
 from .motor import Motor
+from .touch import Touch
+from .rainbow import Rainbow
 
 VID = "16d0"
 PID = "08c3"
@@ -29,13 +31,13 @@ class Client:
         'motion': Motion,
         'matrix': Matrix,
         'number': Number,
-        # 'touch': Touch,
+        'touch': Touch,
         # 'light': Light,
         # 'colour': Colour,
         'joystick': Joystick,
         'motor': Motor,
         # 'weather': Weather,
-        # 'rainbow': Rainbow
+        'rainbow': Rainbow
     }
     _channel_names = [
         'eight',
@@ -44,13 +46,18 @@ class Client:
         'five',
         'four',
         'three',
-        'two'
+        'two',
         'one'
     ]
 
     def __init__(self, port=None, baud=9600, requires=None):
-        pid = check_output(["pidof","flotilla"]).strip()
-        pid = int(pid)
+        self._enable_debug = False
+
+        try:
+            pid = check_output(["pidof","flotilla"]).strip()
+            pid = int(pid)
+        except CalledProcessError:
+            pid = 0
 
         if pid > 0:
             raise AttributeError("""Flotilla server is running!
@@ -199,7 +206,8 @@ Try: kill {pid}""".format(pid=pid))
         return self._module_handlers.keys()
 
     def _handle_command(self, command):
-        print(command)
+        if self._enable_debug:
+            print(command)
         command = command.strip()
 
         if command[0] == "#":

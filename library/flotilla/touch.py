@@ -1,7 +1,6 @@
-import module
+from .module import Module
 
-
-class Touch(module.Module):
+class Touch(Module):
     name = 'touch'
 
     @property
