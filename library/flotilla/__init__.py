@@ -80,6 +80,7 @@ Try: kill {pid}""".format(pid=pid))
         self._modules = [NoModule() for x in range(self.num_channels)]
 
         self.ready = False
+        self.module_changed = None
 
         self._requires = requires
         self._requirements_met = self._requires is None
@@ -160,6 +161,11 @@ Try: kill {pid}""".format(pid=pid))
 
     def module_update(self, channel_index, data):
         self._serial_write("s {} {}".format(channel_index, data))
+
+    def first(self, type):
+        for module in self.available.values():
+            if module.is_a(type):
+                return module
 
     @property
     def channel_one(self):
@@ -242,7 +248,9 @@ Try: kill {pid}""".format(pid=pid))
     def _handle_module_command(self, channel, device, command, data):
         if command == "u":
             if not self._modules[channel].is_a(NoModule):
-                self._modules[channel].set_data(data)
+                if self._modules[channel].set_data(data):
+                    if callable(self.module_changed):
+                        self.module_changed(self._channel_names[channel],self._modules[channel])
             return
 
         if command == "c":
