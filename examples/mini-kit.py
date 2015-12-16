@@ -1,5 +1,5 @@
 print("""
-This is example requires a Touch and Rainbow module,
+This example requires a Touch and Rainbow module,
 you'll find these in the mini kit.
 
 Use the buttons on the Touch module to control
@@ -12,11 +12,10 @@ import colorsys
 import flotilla
 import time
 
-
 client = flotilla.Client(
    requires={
         'one': flotilla.Touch,
-	'eight': flotilla.Rainbow
+        'eight': flotilla.Rainbow
     })
 
 def module_changed(channel, module):
@@ -53,11 +52,10 @@ try:
             r, g, b = [int(x * 255.0) for x in colorsys.hsv_to_rgb(hue/360.0, 1.0, 1.0)]
         
         rainbow.set_all(r, g, b).update()
-	
+
         #print("Hue: {hue}, RGB: {r},{g},{b}".format(
-	#	hue=hue, r=r, g=g, b=b))
+        #hue=hue, r=r, g=g, b=b))
 
         time.sleep(0.1)
 except KeyboardInterrupt:
     client.stop()
-
