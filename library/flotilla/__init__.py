@@ -16,6 +16,7 @@ from .joystick import Joystick
 from .motor import Motor
 from .touch import Touch
 from .rainbow import Rainbow
+from .light import Light
 
 VID = "16d0"
 PID = "08c3"
@@ -32,7 +33,7 @@ class Client:
         'matrix': Matrix,
         'number': Number,
         'touch': Touch,
-        # 'light': Light,
+        'light': Light,
         # 'colour': Colour,
         'joystick': Joystick,
         'motor': Motor,
