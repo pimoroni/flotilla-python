@@ -1,7 +1,7 @@
-import module
+from .module import Module
 
 
-class Light(module.Module):
+class Light(Module):
     name = 'light'
 
     @property
