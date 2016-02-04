@@ -173,10 +173,6 @@ Try: kill {pid}""".format(pid=pid))
         return self._modules[self._channel_names.index('one')]
 
     @property
-    def channel_one(self):
-        return self._modules[self._channel_names.index('one')]
-
-    @property
     def channel_two(self):
         return self._modules[self._channel_names.index('two')]
 
@@ -199,6 +195,10 @@ Try: kill {pid}""".format(pid=pid))
     @property
     def channel_seven(self):
         return self._modules[self._channel_names.index('seven')]
+
+    @property
+    def channel_eight(self):
+        return self._mdoules[self._channel_names.index('eight')]
 
     @property
     def available(self):
