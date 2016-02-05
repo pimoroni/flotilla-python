@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 print("""
 This example will iterate through all connected Flotilla modules,
 find each Matrix, and blink one of the pixels.

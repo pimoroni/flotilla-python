@@ -68,7 +68,7 @@ Try: kill {pid}""".format(pid=pid))
         if port is None:
             ports = serial.tools.list_ports.comports()
             for p in ports:
-                if "USB VID:PID={vid}:{pid}".format(vid=VID.upper(),pid=PID.upper()) in p[2]:
+                if "USB VID:PID={vid}:{pid}".format(vid=VID,pid=PID).upper() in p[2].upper():
                     port = p[0]
 
         if port is None:
@@ -173,10 +173,6 @@ Try: kill {pid}""".format(pid=pid))
         return self._modules[self._channel_names.index('one')]
 
     @property
-    def channel_one(self):
-        return self._modules[self._channel_names.index('one')]
-
-    @property
     def channel_two(self):
         return self._modules[self._channel_names.index('two')]
 
@@ -199,6 +195,10 @@ Try: kill {pid}""".format(pid=pid))
     @property
     def channel_seven(self):
         return self._modules[self._channel_names.index('seven')]
+
+    @property
+    def channel_eight(self):
+        return self._mdoules[self._channel_names.index('eight')]
 
     @property
     def available(self):
