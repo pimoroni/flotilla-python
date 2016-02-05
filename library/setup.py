@@ -35,16 +35,16 @@ classifiers = ['Development Status :: 5 - Production/Stable',
                'Topic :: Software Development',
                'Topic :: System :: Hardware']
 
-setup(name      = 'flotilla',
-    version     = '0.0.2',
-    author      = 'Philip Howard',
-    author_email= 'phil@pimoroni.com',
-    description = 'Flotilla Python Serial API',
-    long_description= open('README.md').read() + open('CHANGELOG.txt').read(),
-    license     = 'MIT',
-    keywords    = 'Raspberry Pi Flotilla',
-    url         = 'http://www.pimoroni.com',
-    classifiers = classifiers,
-    packages    = ['flotilla'],
-    install_requires= ['pyserial >= 2.6.0]
+setup(name        = 'flotilla',
+      version     = '0.0.2',
+      author      = 'Philip Howard',
+      author_email= 'phil@pimoroni.com',
+      description = 'Flotilla Python Serial API',
+      long_description= open('README.md').read() + open('CHANGELOG.txt').read(),
+      license     = 'MIT',
+      keywords    = 'Raspberry Pi Flotilla',
+      url         = 'http://www.pimoroni.com',
+      classifiers = classifiers,
+      packages    = ['flotilla'],
+      install_requires= ['pyserial >= 2.6.0']
 )
