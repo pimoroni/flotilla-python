@@ -6,15 +6,24 @@ class Motor(Module):
 
     def __init__(self, channel, client):
         Module.__init__(self, channel, client)
-        self.speed = 0
+        self._speed = 0
 
     def update(self):
-        self.send([self.speed])
+        self.send([self._speed])
 
     def stop(self):
-        self.speed = 0
+        self._speed = 0
         self.update()
 
+    def reverse(self):
+        self._speed = -self._speed
+        self.update()
+
+    @property
+    def speed(self):
+        return self._speed
+
+    @speed.setter
     def speed(self, speed):
-        self.speed = self.clamp(speed, -63, 63)
+        self._speed = self.clamp(speed, -63, 63)
         self.update()
