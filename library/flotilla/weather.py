@@ -6,12 +6,12 @@ class Weather(Module):
 
     @property
     def pressure(self):
-        if len(self.data) >= 0:
+        if len(self.data) > 1:
             return int(self.data[1]) / 10
         return 0
 
     @property
     def temperature(self):
-        if len(self.data) >= 0:
+        if len(self.data) > 0:
             return float(self.data[0]) / 100
         return 0
