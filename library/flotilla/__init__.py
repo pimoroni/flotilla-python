@@ -174,7 +174,13 @@ Try: kill {pid}""".format(pid=pid))
 
     def _serial_write(self, data):
         self._debug("Sending: {}".format(data))
-        self.serial.write(bytes(data + "\r", "ascii"))
+        
+        try:
+            data = bytes(data + "\r", "ascii")
+        except TypeError:
+            data = bytes(data + "\r")
+
+        self.serial.write(data)
 
     def set_dock_name(self, name):
         '''Update the saved dock name in dock EEPROM
