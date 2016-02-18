@@ -53,9 +53,72 @@ class Client:
         'one'
     ]
 
-    def __init__(self, port=None, baud=115200, requires=None):
-        self._enable_debug = False
+    def __init__(self, port=None, baud=115200, requires=None, debug=False, clear_on_exit=True):
+        self._enable_debug = debug
+        self.clear_state_on_exit = clear_on_exit
 
+        self.running = False
+
+        self.dock_name = None
+        self.dock_user = None
+        self.dock_serial = None
+        self.dock_version = None
+
+        self._on_connect = None
+        self._on_disconnect = None
+
+        self.num_channels = 8
+        self.port = port
+        self.baud = baud
+
+        self._modules = [NoModule() for x in range(self.num_channels)]
+
+        self.ready = False
+        self.module_changed = None
+
+        self._requires = requires
+
+        # Sniff for a running Flotilla Server instance and error if found
+        self._check_flotilla_server()
+
+        # Try to find the port automagically if it's not supplied
+        if self.port is None:
+            self.port = self._find_serial_port()
+
+        self.serial = serial.Serial(self.port, self.baud, timeout=0)
+
+        self._start()
+
+    def _start(self):
+        self.running = True
+        self._thread = threading.Thread(target=self._poll_serial)
+        self._thread.start()
+        atexit.register(self.stop)
+
+        self._wait_for_version_info()
+
+        self.enumerate_devices()
+
+        time.sleep(0.5) # Allow enough time for enumeration to complete
+
+        self._check_requirements_and_launch_loop()
+
+        self.ready = True
+
+    def _find_serial_port(self):
+        ports = serial.tools.list_ports.comports()
+
+        for check_port in ports:
+            if hasattr(serial.tools,'list_ports_common') and type(check_port) == serial.tools.list_ports_common.ListPortInfo:
+                if (check_port.vid, check_port.pid) == (VID, PID):
+                    return check_port.device
+                continue
+            if "USB VID:PID={vid}:{pid}".format(vid=hex(VID)[2:].upper(),pid=hex(PID)[2:].upper()) in check_port[2].upper():
+                return check_port[0]
+
+        raise AttributeError("Couldn't find Flotilla. Please try specifying a port.")
+
+    def _check_flotilla_server(self):
         try:
             pid = check_output(["pidof","flotilla"]).strip()
             pid = int(pid)
@@ -67,65 +130,13 @@ class Client:
 Please stop it before using the Python API.
 Try: kill {pid}""".format(pid=pid))
 
-        if port is None:
-            ports = serial.tools.list_ports.comports()
-
-            for check_port in ports:
-                if hasattr(serial.tools,'list_ports_common') and type(check_port) == serial.tools.list_ports_common.ListPortInfo:
-                    if (check_port.vid, check_port.pid) == (VID, PID):
-                        port = check_port.device
-                        break
-                    continue
-                if "USB VID:PID={vid}:{pid}".format(vid=hex(VID)[2:].upper(),pid=hex(PID)[2:].upper()) in check_port[2].upper():
-                    port = check_port[0]
-                    break
-
-        if port is None:
-            raise AttributeError("Couldn't find Flotilla. Please try specifying a port.")
-
-        self.num_channels = 8
-        self.port = port
-        self.baud = baud
-        self.running = True
-        self.clear_state_on_exit = True
-        
-        self._modules = [NoModule() for x in range(self.num_channels)]
-
-        self.ready = False
-        self.module_changed = None
-
-        self._requires = requires
-        self._requirements_met = self._requires is None
-
-        self.dock_name = None
-        self.dock_user = None
-        self.dock_serial = None
-        self.dock_version = None
-
-        self._on_connect = None
-        self._on_disconnect = None
-
-        self.serial = serial.Serial(port, baud, timeout=0)
-
-        self._thread = threading.Thread(target=self._poll_serial)
-        self._thread.start()
-        atexit.register(self.stop)
-
-        self._request_version_info()
-
-        self._wait_for_version_info();
-
-        self.enumerate_devices()
-
-        self._check_requirements_and_launch_loop()
-        self.ready = True
-
     def _request_version_info(self):
         self._serial_write("v")
 
     def _wait_for_version_info(self):
         while None in (self.dock_name, self.dock_user, self.dock_serial, self.dock_version):
-            pass
+            self._request_version_info()
+            time.sleep(1)
 
     def _check_requirements_and_launch_loop(self):
         if self._requires is None:
@@ -152,19 +163,17 @@ Try: kill {pid}""".format(pid=pid))
         print(LANG_READY)
 
     def _required_modules_connected(self):
-        self._requirements_met = True
-        if self._requires is None:
-            return True
+        if self._requires is not None:
+            for channel in self._requires.keys():
+                module_type = self._requires[channel]
+                channel_index = self._channel_names.index(channel)
+                if not self._modules[channel_index].is_a(module_type):
+                    return False
 
-        for channel in self._requires.keys():
-            module_type = self._requires[channel]
-            channel_index = self._channel_names.index(channel)
-            if not self._modules[channel_index].is_a(module_type):
-                self._requirements_met = False
-
-        return self._requirements_met
+        return True
 
     def _serial_write(self, data):
+        self._debug("Sending: {}".format(data))
         self.serial.write(bytes(data + "\r", "ascii"))
 
     def set_dock_name(self, name):
@@ -194,7 +203,6 @@ Try: kill {pid}""".format(pid=pid))
         if self.dock_version > 0.1:
             channel_index = self._channel_index_to_number(channel_index)
         self._serial_write("s {} {}".format(channel_index, data))
-        self._debug("s {} {}".format(channel_index, data))
 
     def first(self, type):
         for module in self.available.values():
@@ -364,6 +372,9 @@ Try: kill {pid}""".format(pid=pid))
                 command += character
 
     def stop(self):
+        if not self.running:
+            return
+
         if self.clear_state_on_exit:
             for module in self.available.values():
                 module.stop()
