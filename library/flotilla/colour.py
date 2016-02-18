@@ -1,7 +1,7 @@
-import module
+from .module import Module
 
 
-class Colour(module.Module):
+class Colour(Module):
     name = 'colour'
 
     @property
