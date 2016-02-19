@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 print("""
 This example requires a Touch and Rainbow module,
 you'll find these in the mini kit.

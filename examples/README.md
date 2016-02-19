@@ -2,6 +2,12 @@
 
 These are basic examples for Flotilla controlled via Python
 
+identify.py
+--------------
+
+This is a simple script that will list the connected docks and provide info such as firmware version. Useful to check whether everything is up-to-date and otherwise hunky-dory!
+
+
 blink-matrix.py
 --------------
 
@@ -25,3 +31,15 @@ Button 1: change hue in one direction
 Button 2: change hue in the other direction
 Button 3: this button has no function
 Button 4: switch Rainbow on and off
+
+
+rainbow.py
+--------------
+
+This is a simple mood light example using Rainbow.
+
+
+weather.py
+--------------
+
+Outputs the readings performed by the Weather module (Temperature/Pressure)
