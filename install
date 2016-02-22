@@ -21,8 +21,6 @@ DISCLAIMER
 
 scriptname="install"
 
-HOME=/home/$SUDO_USER
-
 confirm() {
     if [ "$FORCE" == '-y' ]; then
         true
@@ -76,15 +74,16 @@ pip_pkg_req() {
 }
 
 pip_chk_pip3() {
-    if [ -e /usr/bin/pip3  ]; then
+    if command -v pip3 > /dev/null; then
         PIP3_BIN="pip3"
-    else
+    elif command -v pip-3.2 > /dev/null; then
         PIP3_BIN="pip-3.2"
+    else
+        PIP3_BIN=""
     fi
 }
 
 pip_pkg_req3() {
-    pip_chk_pip3
     PIP_CHK=$($PIP3_BIN search $1 | grep INSTALLED)
 
     if [ "" == "$PIP_CHK" ]; then
@@ -94,18 +93,52 @@ pip_pkg_req3() {
     fi
 }
 
-sudocheck
+os_check() {
+    IS_RASPBIAN=false
+    IS_MACOSX=false
+    IS_X86_64=false
+    IS_X86_32=false
+    
+    if [ -f /etc/os-release ]; then
+        cat /etc/os-release | grep "Raspbian" > /dev/null
+        IS_RASPBIAN=true
+    elif uname -s | grep "Darwin" > /dev/null; then
+        IS_MACOSX=true        
+    elif uname -m | grep "x86_64" > /dev/null; then
+        IS_X86_64=true
+    else
+        IS_X86_32=true
+    fi    
+}
 
-echo -e "Uninstalling pyserial from apt repository...\n"
-sudo apt-get remove python-serial python3-serial
+: <<'MAINSTART'
+
+Perform all global variables declarations as well as function definition
+above this section for clarity, thanks!
+
+MAINSTART
+
+os_check
+sudocheck
+pip_chk_pip3
+
+if command -v apt-get > /dev/null; then
+    echo -e "Uninstalling pyserial from apt repository...\n"
+    sudo apt-get remove python-serial python3-serial
+fi
 
 echo -e "Installing pyserial from pip repository...\n"
 sudo pip install pyserial
-sudo pip3-2 install pyserial
+if [ -n "$PIP3_BIN" ]; then
+    sudo $PIP3_BIN install pyserial
+fi
 
 echo -e "Installing flotilla library...\n"
-sudo python ./library/setup.py install
-sudo python3 ./library/setup.py install
+cd ./library
+sudo python ./setup.py install
+if [ -n "$PIP3_BIN" ]; then
+    sudo python3 ./setup.py install
+fi
 
 echo -e "\nAll done! Time to set sail.\n"
 
