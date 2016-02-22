@@ -42,6 +42,10 @@ warning() {
     echo "$(tput setaf 1)$1$(tput sgr0)"
 }
 
+newline() {
+    echo ""
+}
+
 sudocheck() {
     if [ $(id -u) -ne 0 ]; then
         echo -e "Install must be run as root. Try 'sudo ./$scriptname'\n"
@@ -140,6 +144,11 @@ if [ -n "$PIP3_BIN" ]; then
     sudo python3 ./setup.py install
 fi
 
-echo -e "\nAll done! Time to set sail.\n"
+newline
+echo -e "We will now check that your dock is running the latest firmware\n"
+cd ../firmware
+sudo ./update_firmware
+
+echo -e "All done! Time to set sail.\n"
 
 exit 0

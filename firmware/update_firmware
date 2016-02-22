@@ -24,6 +24,19 @@ dockhexpath="./flotilla-dock.hex"
 dockpytool="./firmware-version.py"
 firmwarev="1.12"
 
+confirm() {
+    if [ "$FORCE" == '-y' ]; then
+        true
+    else
+        read -r -p "$1 [y/N] " response < /dev/tty
+        if [[ $response =~ ^(yes|y)$ ]]; then
+            true
+        else
+            false
+        fi
+    fi
+}
+
 success() {
     echo "$(tput setaf 2)$1$(tput sgr0)"
 }
@@ -36,30 +49,48 @@ newline() {
     echo ""
 }
 
+sudocheck() {
+    if [ $(id -u) -ne 0 ]; then
+        echo -e "Install must be run as root. Try 'sudo ./$scriptname'\n"
+        exit
+    fi
+}
+
 os_check() {
-    if cat /etc/os-release | grep "Raspbian" > /dev/null; then
-        dfubinpath="./raspi/dfu-programmer"
-    elif uname -a | grep "Darwin" > /dev/null; then
-        dfubinpath="./macosx/dfu-programmer"        
-    elif uname -a | grep "x86_64" > /dev/null; then
-        dfubinpath="./linux/dfu-programmer-amd64"
+    IS_RASPBIAN=false
+    IS_MACOSX=false
+    IS_X86_64=false
+    IS_X86_32=false
+    
+    if [ -f /etc/os-release ]; then
+        cat /etc/os-release | grep "Raspbian" > /dev/null
+        IS_RASPBIAN=true
+    elif uname -s | grep "Darwin" > /dev/null; then
+        IS_MACOSX=true        
+    elif uname -m | grep "x86_64" > /dev/null; then
+        IS_X86_64=true
     else
-        dfubinpath="./linux/dfu-programmer-i386"
+        IS_X86_32=true
     fi    
 }
 
-if [ $(id -u) -ne 0 ]; then
-    echo -e "Install must be run as root. Try with 'sudo'\n"
-    exit
+os_check
+sudocheck
+
+if $IS_RASPBIAN; then
+    dfubinpath="./raspi/dfu-programmer"
+elif $IS_MACOSX; then
+    dfubinpath="./macosx/dfu-programmer"
+elif $IS_X86_64; then
+    dfubinpath="./linux/dfu-programmer-amd64"
+else
+    dfubinpath="./linux/dfu-programmer-i386"
 fi
 
-os_check
-
-newline
 echo "Flotilla Firmware Updater"
 
 if [ -f $dockhexpath ] || [ -L $dockhexpath ]; then
-    success "dock firmware file found"
+    echo "dock firmware file found"
     newline
 else
     warning "No flotilla-dock.hex file found. Exiting!"
@@ -74,24 +105,34 @@ if python -c "import flotilla" 2>&1 >/dev/null | grep "No module named flotilla"
     echo "\curl -sS get.pimoroni.com/flotilla | bash"
     newline
 else
-    echo "reading current firmware version"
+    success "Please plug in your Flotilla Dock now."
+    read -rsp $'Press any key to continue...\n' -n1 key
+    newline
+    echo "Reading current firmware version..."
+    sleep 5
     if [ -f $dockpytool ]; then
         $dockpytool
         firmwared=$($dockpytool | grep "Version")
         if $dockpytool | grep "$firmwarev" > /dev/null; then
+            newline
             echo "Your dock is already flashed with the latest firmware"
-            echo "but not to worry we will reflash it anyway"
+            if confirm "Would you like to reflash it anyway?"; then
+                newline
+            else
+                newline
+                exit
+            fi
         else
             echo "Your dock firmware will be updated to"
             echo "Version: $firmwarev"
             if [[ "$firmwared" < "Version: 1.00" ]];then
-            newline
-            warning "Note: This update will break compatibility with older versions"
-            warning "of flotilla and rockpool. Press CTRL+C now if you wish to abort."
-            newline
+                newline
+                warning "Note: This update will break compatibility with older versions"
+                warning "of flotilla and rockpool. Press CTRL+C now if you wish to abort."
+                newline
+                read -rsp $'Press any key to continue...\n' -n1 key
             fi
         fi
-        read -rsp $'Press any key to continue...\n' -n1 key
     fi
 fi
 
@@ -109,7 +150,7 @@ if command -v lsusb > /dev/null;then
     
     newline
     success "Plug in your Flotilla Dock now."
-    success "Updating should continue automatically."
+    echo "Updating should continue automatically."
     newline
     
     while ! lsusb -d 03eb:2fe4; do
@@ -136,7 +177,7 @@ elif command -v ioreg > /dev/null;then
     
     newline
     success "Plug in your Flotilla Dock now."
-    success "Updating should continue automatically."
+    echo "Updating should continue automatically."
     newline
     
     while [ -z "$DFUDOCK" ]; do
@@ -163,7 +204,7 @@ else
     sudo $dfubinpath atxmega32a4u flash $dockhexpath   
 fi
     newline
-    success "Dock Firmware Update completed, enjoy!"
+    success "Dock Firmware Update completed"
     warning "Please unplug/replug your Flotilla Dock before use!"
     newline
 
