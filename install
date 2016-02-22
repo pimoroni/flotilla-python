@@ -1,0 +1,112 @@
+#!/bin/bash
+
+: <<'DISCLAIMER'
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+This script is licensed under the terms of the MIT license.
+Unless otherwise noted, code reproduced herein
+was written for this script.
+
+- The Pimoroni Crew -
+
+DISCLAIMER
+
+scriptname="install"
+
+HOME=/home/$SUDO_USER
+
+confirm() {
+    if [ "$FORCE" == '-y' ]; then
+        true
+    else
+        read -r -p "$1 [y/N] " response < /dev/tty
+        if [[ $response =~ ^(yes|y)$ ]]; then
+            true
+        else
+            false
+        fi
+    fi
+}
+
+success() {
+    echo "$(tput setaf 2)$1$(tput sgr0)"
+}
+
+warning() {
+    echo "$(tput setaf 1)$1$(tput sgr0)"
+}
+
+sudocheck() {
+    if [ $(id -u) -ne 0 ]; then
+        echo -e "Install must be run as root. Try 'sudo ./$scriptname'\n"
+        exit
+    fi
+}
+
+apt_pkg_req() {
+    APT_CHK=$(dpkg-query -W -f='${Status}\n' $1 2> /dev/null | grep "install ok installed")
+
+    if [ "" == "$APT_CHK" ]; then
+        true
+    else
+        false
+    fi
+}
+
+apt_pkg_install() {
+    \curl -sS get.pimoroni.com/package | bash -s - $1 || { warning "Sorry, Apt failed to install $1, I can't continue!" && exit; }
+}
+
+pip_pkg_req() {
+    PIP_CHK=$(pip search $1 | grep INSTALLED)
+
+    if [ "" == "$PIP_CHK" ]; then
+        true
+    else
+        false
+    fi
+}
+
+pip_chk_pip3() {
+    if [ -e /usr/bin/pip3  ]; then
+        PIP3_BIN="pip3"
+    else
+        PIP3_BIN="pip-3.2"
+    fi
+}
+
+pip_pkg_req3() {
+    pip_chk_pip3
+    PIP_CHK=$($PIP3_BIN search $1 | grep INSTALLED)
+
+    if [ "" == "$PIP_CHK" ]; then
+        true
+    else
+        false
+    fi
+}
+
+sudocheck
+
+echo -e "Uninstalling pyserial from apt repository...\n"
+sudo apt-get remove python-serial python3-serial
+
+echo -e "Installing pyserial from pip repository...\n"
+sudo pip install pyserial
+sudo pip3-2 install pyserial
+
+echo -e "Installing flotilla library...\n"
+sudo python ./library/setup.py install
+sudo python3 ./library/setup.py install
+
+echo -e "\nAll done! Time to set sail.\n"
+
+exit 0
