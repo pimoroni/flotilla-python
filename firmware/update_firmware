@@ -61,17 +61,16 @@ os_check() {
     IS_MACOSX=false
     IS_X86_64=false
     IS_X86_32=false
-    
-    if [ -f /etc/os-release ]; then
-        cat /etc/os-release | grep "Raspbian" > /dev/null
+
+    if [ -f /etc/os-release ] && cat /etc/os-release | grep "Raspbian" > /dev/null; then
         IS_RASPBIAN=true
     elif uname -s | grep "Darwin" > /dev/null; then
-        IS_MACOSX=true        
+        IS_MACOSX=true
     elif uname -m | grep "x86_64" > /dev/null; then
         IS_X86_64=true
     else
         IS_X86_32=true
-    fi    
+    fi
 }
 
 os_check
@@ -139,7 +138,7 @@ fi
 if command -v lsusb > /dev/null;then
 
     RESULT=$(lsusb -d 16d0:08c3)
-    
+
     if [ ! -z "$RESULT" ]; then
         warning "Please unplug your Flotilla Dock!"
         while [ ! -z "$RESULT" ]; do
@@ -147,18 +146,18 @@ if command -v lsusb > /dev/null;then
             sleep 0.01
         done
     fi
-    
+
     newline
     success "Plug in your Flotilla Dock now."
     echo "Updating should continue automatically."
     newline
-    
+
     while ! lsusb -d 03eb:2fe4; do
         sleep 0.01
     done
-    
+
     sleep 0.2
-    
+
     sudo $dfubinpath atxmega32a4u erase
     sudo $dfubinpath atxmega32a4u flash $dockhexpath
 
@@ -166,7 +165,7 @@ elif command -v ioreg > /dev/null;then
 
     HEXDOCK=$(ioreg | grep "Flotilla Dock")
     DFUDOCK=$(ioreg | grep "Flotilla DFU")
-    
+
     if [ ! -z "$HEXDOCK" ]; then
         warning "Please unplug your Flotilla Dock!"
         while [ ! -z "$HEXDOCK" ]; do
@@ -174,23 +173,23 @@ elif command -v ioreg > /dev/null;then
             sleep 0.01
         done
     fi
-    
+
     newline
     success "Plug in your Flotilla Dock now."
     echo "Updating should continue automatically."
     newline
-    
+
     while [ -z "$DFUDOCK" ]; do
         DFUDOCK=$(ioreg | grep "Flotilla DFU")
         sleep 0.01
     done
-    
+
     sleep 0.2
-    
+
     sudo $dfubinpath atxmega32a4u erase
     sudo $dfubinpath atxmega32a4u flash $dockhexpath
 else
-    warning "Please unplug your Flotilla Dock if it is plugged in!"    
+    warning "Please unplug your Flotilla Dock if it is plugged in!"
     sudo sleep 2
     newline
     success "Plug in your Flotilla Dock now."
@@ -201,7 +200,7 @@ else
         warning "No Flotilla Dock detected!"
         exit
     fi
-    sudo $dfubinpath atxmega32a4u flash $dockhexpath   
+    sudo $dfubinpath atxmega32a4u flash $dockhexpath
 fi
     newline
     success "Dock Firmware Update completed"

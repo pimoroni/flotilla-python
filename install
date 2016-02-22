@@ -102,17 +102,16 @@ os_check() {
     IS_MACOSX=false
     IS_X86_64=false
     IS_X86_32=false
-    
-    if [ -f /etc/os-release ]; then
-        cat /etc/os-release | grep "Raspbian" > /dev/null
+
+    if [ -f /etc/os-release ] && cat /etc/os-release | grep "Raspbian" > /dev/null; then
         IS_RASPBIAN=true
     elif uname -s | grep "Darwin" > /dev/null; then
-        IS_MACOSX=true        
+        IS_MACOSX=true
     elif uname -m | grep "x86_64" > /dev/null; then
         IS_X86_64=true
     else
         IS_X86_32=true
-    fi    
+    fi
 }
 
 : <<'MAINSTART'
@@ -127,12 +126,20 @@ sudocheck
 pip_chk_pip3
 
 if command -v apt-get > /dev/null; then
+    echo -e "Updating apt database...\n"
+    sudo apt-get update
+    newline
     echo -e "Uninstalling pyserial from apt repository...\n"
     sudo apt-get remove python-serial python3-serial
+    newline
+    echo -e "Installing pip if required...\n"
+    sudo apt-get install python-pip python3-pip
 fi
 
-echo -e "Installing pyserial from pip repository...\n"
-sudo pip install pyserial
+if command -v pip > /dev/null; then
+    echo -e "Installing pyserial from pip repository...\n"
+    sudo pip install pyserial
+fi
 if [ -n "$PIP3_BIN" ]; then
     sudo $PIP3_BIN install pyserial
 fi
@@ -140,6 +147,7 @@ fi
 echo -e "Installing flotilla library...\n"
 cd ./library
 sudo python ./setup.py install
+
 if [ -n "$PIP3_BIN" ]; then
     sudo python3 ./setup.py install
 fi
