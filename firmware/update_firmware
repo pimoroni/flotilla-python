@@ -37,13 +37,11 @@ newline() {
 }
 
 os_check() {
-    cmdexec="uname -a"
-
-    if $cmdexec | grep "Darwin" > /dev/null; then
-        dfubinpath="./macosx/dfu-programmer"
-    elif $cmdexec | grep "Raspbian" > /dev/null; then
-        dfubinpath="./raspi/dfu-programmer"        
-    elif $cmdexec | grep "x86_64" > /dev/null; then
+    if cat /etc/os-release | grep "Raspbian" > /dev/null; then
+        dfubinpath="./raspi/dfu-programmer"
+    elif uname -a | grep "Darwin" > /dev/null; then
+        dfubinpath="./macosx/dfu-programmer"        
+    elif uname -a | grep "x86_64" > /dev/null; then
         dfubinpath="./linux/dfu-programmer-amd64"
     else
         dfubinpath="./linux/dfu-programmer-i386"
@@ -74,6 +72,7 @@ if python -c "import flotilla" 2>&1 >/dev/null | grep "No module named flotilla"
     echo "This is not essential to update the firmware"
     echo "but should you wish to you can install it using:"
     echo "\curl -sS get.pimoroni.com/flotilla | bash"
+    newline
 else
     echo "reading current firmware version"
     if [ -f $dockpytool ]; then
