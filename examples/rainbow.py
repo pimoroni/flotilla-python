@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 import flotilla
 import time
 import colorsys
@@ -26,4 +28,3 @@ try:
 
 except KeyboardInterrupt:
     client.stop()
-

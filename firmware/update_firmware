@@ -1,0 +1,211 @@
+#!/bin/bash
+
+: <<'DISCLAIMER'
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+OTHER DEALINGS IN THE SOFTWARE.
+
+This script is licensed under the terms of the MIT license.
+Unless otherwise noted, code reproduced herein
+was written for this script.
+
+- The Pimoroni Crew -
+
+DISCLAIMER
+
+dfubinpath="./dfu-programmer"
+dockhexpath="./flotilla-dock.hex"
+dockpytool="./firmware-version.py"
+firmwarev="1.12"
+
+confirm() {
+    if [ "$FORCE" == '-y' ]; then
+        true
+    else
+        read -r -p "$1 [y/N] " response < /dev/tty
+        if [[ $response =~ ^(yes|y)$ ]]; then
+            true
+        else
+            false
+        fi
+    fi
+}
+
+success() {
+    echo "$(tput setaf 2)$1$(tput sgr0)"
+}
+
+warning() {
+    echo "$(tput setaf 1)$1$(tput sgr0)"
+}
+
+newline() {
+    echo ""
+}
+
+sudocheck() {
+    if [ $(id -u) -ne 0 ]; then
+        echo -e "Install must be run as root. Try 'sudo ./$scriptname'\n"
+        exit
+    fi
+}
+
+os_check() {
+    IS_RASPBIAN=false
+    IS_MACOSX=false
+    IS_X86_64=false
+    IS_X86_32=false
+    
+    if [ -f /etc/os-release ]; then
+        cat /etc/os-release | grep "Raspbian" > /dev/null
+        IS_RASPBIAN=true
+    elif uname -s | grep "Darwin" > /dev/null; then
+        IS_MACOSX=true        
+    elif uname -m | grep "x86_64" > /dev/null; then
+        IS_X86_64=true
+    else
+        IS_X86_32=true
+    fi    
+}
+
+os_check
+sudocheck
+
+if $IS_RASPBIAN; then
+    dfubinpath="./raspi/dfu-programmer"
+elif $IS_MACOSX; then
+    dfubinpath="./macosx/dfu-programmer"
+elif $IS_X86_64; then
+    dfubinpath="./linux/dfu-programmer-amd64"
+else
+    dfubinpath="./linux/dfu-programmer-i386"
+fi
+
+echo "Flotilla Firmware Updater"
+
+if [ -f $dockhexpath ] || [ -L $dockhexpath ]; then
+    echo "dock firmware file found"
+    newline
+else
+    warning "No flotilla-dock.hex file found. Exiting!"
+    newline
+    exit
+fi
+
+if python -c "import flotilla" 2>&1 >/dev/null | grep "No module named flotilla"; then
+    echo "The flotilla Python API is not installed."
+    echo "This is not essential to update the firmware"
+    echo "but should you wish to you can install it using:"
+    echo "\curl -sS get.pimoroni.com/flotilla | bash"
+    newline
+else
+    success "Please plug in your Flotilla Dock now."
+    read -rsp $'Press any key to continue...\n' -n1 key
+    newline
+    echo "Reading current firmware version..."
+    sleep 5
+    if [ -f $dockpytool ]; then
+        $dockpytool
+        firmwared=$($dockpytool | grep "Version")
+        if $dockpytool | grep "$firmwarev" > /dev/null; then
+            newline
+            echo "Your dock is already flashed with the latest firmware"
+            if confirm "Would you like to reflash it anyway?"; then
+                newline
+            else
+                newline
+                exit
+            fi
+        else
+            echo "Your dock firmware will be updated to"
+            echo "Version: $firmwarev"
+            if [[ "$firmwared" < "Version: 1.00" ]];then
+                newline
+                warning "Note: This update will break compatibility with older versions"
+                warning "of flotilla and rockpool. Press CTRL+C now if you wish to abort."
+                newline
+                read -rsp $'Press any key to continue...\n' -n1 key
+            fi
+        fi
+    fi
+fi
+
+if command -v lsusb > /dev/null;then
+
+    RESULT=$(lsusb -d 16d0:08c3)
+    
+    if [ ! -z "$RESULT" ]; then
+        warning "Please unplug your Flotilla Dock!"
+        while [ ! -z "$RESULT" ]; do
+            RESULT=$(lsusb -d 16d0:08c3)
+            sleep 0.01
+        done
+    fi
+    
+    newline
+    success "Plug in your Flotilla Dock now."
+    echo "Updating should continue automatically."
+    newline
+    
+    while ! lsusb -d 03eb:2fe4; do
+        sleep 0.01
+    done
+    
+    sleep 0.2
+    
+    sudo $dfubinpath atxmega32a4u erase
+    sudo $dfubinpath atxmega32a4u flash $dockhexpath
+
+elif command -v ioreg > /dev/null;then
+
+    HEXDOCK=$(ioreg | grep "Flotilla Dock")
+    DFUDOCK=$(ioreg | grep "Flotilla DFU")
+    
+    if [ ! -z "$HEXDOCK" ]; then
+        warning "Please unplug your Flotilla Dock!"
+        while [ ! -z "$HEXDOCK" ]; do
+            HEXDOCK=$(ioreg | grep "Flotilla Dock")
+            sleep 0.01
+        done
+    fi
+    
+    newline
+    success "Plug in your Flotilla Dock now."
+    echo "Updating should continue automatically."
+    newline
+    
+    while [ -z "$DFUDOCK" ]; do
+        DFUDOCK=$(ioreg | grep "Flotilla DFU")
+        sleep 0.01
+    done
+    
+    sleep 0.2
+    
+    sudo $dfubinpath atxmega32a4u erase
+    sudo $dfubinpath atxmega32a4u flash $dockhexpath
+else
+    warning "Please unplug your Flotilla Dock if it is plugged in!"    
+    sudo sleep 2
+    newline
+    success "Plug in your Flotilla Dock now."
+    read -rsp $'Press any key to continue...\n' -n1 key
+    newline
+
+    if sudo $dfubinpath atxmega32a4u erase 2>&1 | grep -q "no device present";then
+        warning "No Flotilla Dock detected!"
+        exit
+    fi
+    sudo $dfubinpath atxmega32a4u flash $dockhexpath   
+fi
+    newline
+    success "Dock Firmware Update completed"
+    warning "Please unplug/replug your Flotilla Dock before use!"
+    newline
+
+exit 0
