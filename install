@@ -20,6 +20,12 @@ was written for this script.
 DISCLAIMER
 
 scriptname="install"
+pip2support="yes" # whether python2 is supported or not
+pip3support="yes" # whether python3 is supported or not
+piplibdep=( "pyserial" ) # dependencies of lib
+pkgaptremove=( "python-serial" "python3-serial" )
+pkgdeplist7=( "git" "python-pip" "python3-pip" )
+pkgdeplist8=( "python-gpiozero" "python3-gpiozero" )
 
 confirm() {
     if [ "$FORCE" == '-y' ]; then
@@ -48,7 +54,8 @@ newline() {
 
 sudocheck() {
     if [ $(id -u) -ne 0 ]; then
-        echo -e "Install must be run as root. Try 'sudo ./$scriptname'\n"
+        echo "Install must be run as root. Try 'sudo ./$scriptname'"
+        newline
         exit
     fi
 }
@@ -126,37 +133,79 @@ sudocheck
 pip_chk_pip3
 
 if command -v apt-get > /dev/null; then
-    echo -e "Updating apt database...\n"
-    sudo apt-get update
-    newline
-    echo -e "Uninstalling pyserial from apt repository...\n"
-    sudo apt-get remove python-serial python3-serial
-    newline
-    echo -e "Installing pip if required...\n"
-    sudo apt-get install python-pip python3-pip
+
+    for pkgrm in ${pkgaptremove[@]}; do
+        sudo apt-get remove "$pkgrm"
+    done
+
+    for pkgdep in ${pkgdeplist7[@]}; do
+        if apt_pkg_req "$pkgdep"; then
+            UPDATE_DB=true
+        fi
+    done
+    for pkgdep in ${pkgdeplist8[@]}; do
+        if apt_pkg_req "$pkgdep"; then
+            UPDATE_DB=true
+        fi
+    done
+    for morepkgdep in ${moreaptdep[@]}; do
+        if apt_pkg_req "$morepkgdep"; then
+            UPDATE_DB=true
+        fi
+    done 
+
+    if $UPDATE_DB; then
+        newline
+        echo "Updating package indexes..."
+        sysupdate
+
+        newline
+        echo "Checking for dependencies..."
+
+        for pkgdep in ${pkgdeplist7[@]}; do
+            if apt_pkg_req "$pkgdep"; then
+                apt_pkg_install "$pkgdep"
+            fi
+        done
+
+        if ! raspbian_old; then
+            for pkgdep in ${pkgdeplist8[@]}; do
+                if apt_pkg_req "$pkgdep"; then
+                    apt_pkg_install "$pkgdep"
+                fi
+            done
+        fi
+    else
+        success "Found!"
+    fi
 fi
 
 if command -v pip > /dev/null; then
-    echo -e "Installing pyserial from pip repository...\n"
-    sudo pip install pyserial
-fi
-if [ -n "$PIP3_BIN" ]; then
-    sudo $PIP3_BIN install pyserial
+    for libdep in ${piplibdep[@]}; do
+        echo "Installing "$libdep" from pip repository..."
+        sudo pip install "$libdep"
+        if [ -n "$PIP3_BIN" ]; then
+            sudo $PIP3_BIN install "$libdep"
+        fi
+    done
 fi
 
-echo -e "Installing flotilla library...\n"
+echo "Installing flotilla library..."
+newline
 cd ./library
-sudo python ./setup.py install
 
+sudo python ./setup.py install
 if [ -n "$PIP3_BIN" ]; then
     sudo python3 ./setup.py install
 fi
 
 newline
-echo -e "We will now check that your dock is running the latest firmware\n"
+echo "We will now check that your dock is running the latest firmware"
+newline
 cd ../firmware
 sudo ./update_firmware
 
-echo -e "All done! Time to set sail.\n"
+echo "All done! Time to set sail."
+newline
 
 exit 0
