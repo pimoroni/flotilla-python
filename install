@@ -263,10 +263,10 @@ if confirm "Do you wish to continue?"; then
     newline
     cd ./library
 
-    if [ $pip2support == "yes" ] && [ -n $(which python2) ]; then
+    if [ $pip2support == "yes" ] && command -v python > /dev/null; then
         sudo python ./setup.py install
     fi
-    if [ $pip3support == "yes" ] && [ -n $(which python3) ]; then
+    if [ $pip3support == "yes" ] && command -v python3 > /dev/null; then
         sudo python3 ./setup.py install
     fi
 
