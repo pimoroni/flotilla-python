@@ -19,7 +19,9 @@ was written for this script.
 
 DISCLAIMER
 
-scriptname="install"
+productname="flotilla python API" # the name of the product to install
+scriptname="install" # the name of this script
+piplibname="flotilla" # the name of the lib to install
 pip2support="yes" # whether python2 is supported or not
 pip3support="yes" # whether python3 is supported or not
 piplibdep=( "pyserial" ) # dependencies of lib
@@ -132,80 +134,107 @@ os_check
 sudocheck
 pip_chk_pip3
 
-if command -v apt-get > /dev/null; then
+newline
+echo "This script will install everything needed to use"
+echo "$productname"
+newline
+warning "--- Warning ---"
+newline
+echo "Always be careful when running scripts and commands"
+echo "copied from the internet. Ensure they are from a"
+echo "trusted source."
+newline
 
-    for pkgrm in ${pkgaptremove[@]}; do
-        sudo apt-get remove "$pkgrm"
-    done
+if confirm "Do you wish to continue?"; then
 
-    for pkgdep in ${pkgdeplist7[@]}; do
-        if apt_pkg_req "$pkgdep"; then
-            UPDATE_DB=true
-        fi
-    done
-    for pkgdep in ${pkgdeplist8[@]}; do
-        if apt_pkg_req "$pkgdep"; then
-            UPDATE_DB=true
-        fi
-    done
-    for morepkgdep in ${moreaptdep[@]}; do
-        if apt_pkg_req "$morepkgdep"; then
-            UPDATE_DB=true
-        fi
-    done 
-
-    if $UPDATE_DB; then
-        newline
-        echo "Updating package indexes..."
-        sysupdate
-
-        newline
-        echo "Checking for dependencies..."
+    if command -v apt-get > /dev/null; then
+    
+        for pkgrm in ${pkgaptremove[@]}; do
+            sudo apt-get remove "$pkgrm"
+        done
 
         for pkgdep in ${pkgdeplist7[@]}; do
             if apt_pkg_req "$pkgdep"; then
-                apt_pkg_install "$pkgdep"
+                UPDATE_DB=true
             fi
         done
+        for pkgdep in ${pkgdeplist8[@]}; do
+            if apt_pkg_req "$pkgdep"; then
+                UPDATE_DB=true
+            fi
+        done
+        for morepkgdep in ${moreaptdep[@]}; do
+            if apt_pkg_req "$morepkgdep"; then
+                UPDATE_DB=true
+            fi
+        done 
 
-        if ! raspbian_old; then
-            for pkgdep in ${pkgdeplist8[@]}; do
+        if $UPDATE_DB; then
+            newline
+            echo "Updating package indexes..."
+            sysupdate
+
+            newline
+            echo "Checking for dependencies..."
+
+            for pkgdep in ${pkgdeplist7[@]}; do
                 if apt_pkg_req "$pkgdep"; then
                     apt_pkg_install "$pkgdep"
                 fi
             done
+
+            if ! raspbian_old; then
+                for pkgdep in ${pkgdeplist8[@]}; do
+                    if apt_pkg_req "$pkgdep"; then
+                        apt_pkg_install "$pkgdep"
+                    fi
+                done
+            fi
+        else
+            success "Found!"
         fi
-    else
-        success "Found!"
     fi
-fi
 
-if command -v pip > /dev/null; then
-    for libdep in ${piplibdep[@]}; do
-        echo "Installing "$libdep" from pip repository..."
-        sudo pip install "$libdep"
-        if [ -n "$PIP3_BIN" ]; then
+    if [ $pip2support == "yes" ] && command -v pip > /dev/null; then
+        for libdep in ${piplibdep[@]}; do
+            echo "Installing "$libdep" for Python 2.x..."
+            sudo pip install "$libdep"
+        done
+    fi
+
+    if [ $pip3support == "yes" ] && [ -n "$PIP3_BIN" ]; then
+        for libdep in ${piplibdep[@]}; do
+            echo "Installing "$libdep" for Python 3.x..."
             sudo $PIP3_BIN install "$libdep"
-        fi
-    done
+        done
+    fi
+
+    echo "Installing $piplibname library..."
+    newline
+    cd ./library
+
+    echo $(which python2)
+    echo $(which python3)
+
+    if [ $pip2support == "yes" ] && [ -n $(which python2) ]; then
+        sudo python ./setup.py install
+    fi
+    if [ $pip3support == "yes" ] && [ -n $(which python3) ]; then
+        sudo python3 ./setup.py install
+    fi
+
+    newline
+    echo "We will now check that your dock is running the latest firmware"
+    newline
+    cd ../firmware
+    sudo ./update_firmware
+
+    echo "All done! Time to set sail."
+    newline
+else
+    newline
+    echo "Aborting..."
+    newline
 fi
-
-echo "Installing flotilla library..."
-newline
-cd ./library
-
-sudo python ./setup.py install
-if [ -n "$PIP3_BIN" ]; then
-    sudo python3 ./setup.py install
-fi
-
-newline
-echo "We will now check that your dock is running the latest firmware"
-newline
-cd ../firmware
-sudo ./update_firmware
-
-echo "All done! Time to set sail."
-newline
 
 exit 0
