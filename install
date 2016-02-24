@@ -27,7 +27,7 @@ pip3support="yes" # whether python3 is supported or not
 piplibdep=( "pyserial" ) # dependencies of lib
 pkgaptremove=( "python-serial" "python3-serial" )
 pkgdeplist7=( "python-pip" "python3-pip" )
-pkgdeplist8=( "python-gpiozero" "python3-gpiozero" )
+pkgdeplist8=()
 
 confirm() {
     if [ "$FORCE" == '-y' ]; then
@@ -198,7 +198,7 @@ newline
 if confirm "Do you wish to continue?"; then
 
     if command -v apt-get > /dev/null; then
-    
+
         for pkgrm in ${pkgaptremove[@]}; do
             sudo apt-get remove "$pkgrm"
         done
