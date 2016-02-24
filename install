@@ -26,7 +26,7 @@ pip2support="yes" # whether python2 is supported or not
 pip3support="yes" # whether python3 is supported or not
 piplibdep=( "pyserial" ) # dependencies of lib
 pkgaptremove=( "python-serial" "python3-serial" )
-pkgdeplist7=( "git" "python-pip" "python3-pip" )
+pkgdeplist7=( "python-pip" "python3-pip" )
 pkgdeplist8=( "python-gpiozero" "python3-gpiozero" )
 
 confirm() {
