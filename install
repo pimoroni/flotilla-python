@@ -29,6 +29,8 @@ pkgaptremove=( "python-serial" "python3-serial" )
 pkgdeplist7=( "python-pip" "python3-pip" )
 pkgdeplist8=()
 
+UPDATE_DB=false
+
 confirm() {
     if [ "$FORCE" == '-y' ]; then
         true
