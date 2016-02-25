@@ -109,7 +109,7 @@ class Client:
         ports = serial.tools.list_ports.comports()
 
         for check_port in ports:
-            if hasattr(serial.tools,'list_ports_common') and type(check_port) == serial.tools.list_ports_common.ListPortInfo:
+            if hasattr(serial.tools,'list_ports_common'):
                 if (check_port.vid, check_port.pid) == (VID, PID):
                     return check_port.device
                 continue
