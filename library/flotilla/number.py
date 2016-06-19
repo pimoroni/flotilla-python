@@ -46,16 +46,20 @@ class Number(Module):
     def set_number(self, number):
         if type(number) is not int:
             raise TypeError("Number must be an integer")
+        if number > 9999:
+            raise ValueError("Number is too big: %d" % number)
+        if number < 0:
+            raise ValueError("Number must not be negative: %d" % number)
 
-        number = [int(x) for x in list(str(number))]
+        number = [int(x) for x in "%04d" % number]
         for x in range(len(number)):
             self.set_digit(x, number[x])
 
     def set_digit(self, digit, value):
         if 0 > value > 9:
-            raise TypeError("Value must between 0 and 9")
+            raise ValueError("Value must between 0 and 9")
         if 0 > digit > 3:
-            raise TypeError("Digit must be between 0 and 3")
+            raise ValueError("Digit must be between 0 and 3")
 
         self.digits[digit] = self._numbers[value]
 
