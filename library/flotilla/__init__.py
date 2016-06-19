@@ -4,6 +4,7 @@ import serial
 import serial.tools.list_ports
 import atexit
 import time
+import sys
 from subprocess import check_output, CalledProcessError
 
 from .module import Module, NoModule
@@ -58,7 +59,7 @@ class Client:
         try:
             pid = check_output(["pidof","flotilla"]).strip()
             pid = int(pid)
-        except CalledProcessError:
+        except (CalledProcessError, OSError):
             pid = 0
 
         if pid > 0:
@@ -145,7 +146,10 @@ Try: kill {pid}""".format(pid=pid))
         return self._requirements_met
 
     def _serial_write(self, data):
-        self.serial.write(bytes(data + "\r", "ascii"))
+        if (sys.version_info >= (3, 0)):
+            self.serial.write(bytes(data + "\r", "ascii"))
+        else:
+            self.serial.write(bytes(data + "\r"))
 
     def set_dock_name(self, name):
         name = name[0:8]
