@@ -21,8 +21,15 @@ class Rainbow(Module):
             self.set_pixel(x, r, g, b)        
         return self
 
+    def _apply_brightness(self, pixel_element):
+        return int(pixel_element * (self.brightness / 255.0))
+
+    def stop(self):
+        self.set_all(0, 0, 0)
+        self.update()
+
     def update(self):
         data = []
         for pixel in self.pixels:
-            data += list(pixel)
+            data += [self._apply_brightness(p) for p in pixel]
         self.send(data)

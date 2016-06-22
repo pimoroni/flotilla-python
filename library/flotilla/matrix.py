@@ -9,6 +9,9 @@ class Matrix(Module):
         self.pixels = [0] * 8
         self.brightness = 40
 
+    def set_brightness(self, brightness):
+        self.brightness = brightness
+
     def set_pixel(self, x, y, state):
         if state:
             self.pixels[7-x] |= (1 << y)
