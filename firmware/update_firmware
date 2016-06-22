@@ -22,7 +22,7 @@ DISCLAIMER
 dfubinpath="./dfu-programmer"
 dockhexpath="./flotilla-dock.hex"
 dockpytool="./firmware-version.py"
-firmwarev="1.12"
+firmwarev="1.14"
 
 confirm() {
     if [ "$FORCE" == '-y' ]; then
@@ -110,7 +110,7 @@ else
     echo "Reading current firmware version..."
     sleep 5
     if [ -f $dockpytool ]; then
-        $dockpytool
+        sudo python $dockpytool
         firmwared=$($dockpytool | grep "Version")
         if $dockpytool | grep "$firmwarev" > /dev/null; then
             newline
