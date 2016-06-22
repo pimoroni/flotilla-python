@@ -23,6 +23,9 @@ class Module:
         self.client = client
         self.data = []
 
+    def stop(self):
+        pass
+
     def send(self, data):
         self.client.module_update(self.channel_index, ",".join([str(d) for d in data]))
         time.sleep(0.01)
