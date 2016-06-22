@@ -6,15 +6,23 @@ Check colour
 
 import flotilla
 import time
+import sys
 
 COLOR_INFO = "{red},{green},{blue},{clear}"
 client = flotilla.Client()
 
+print("Client connected...")
 
 while not client.ready:
     pass
 
+print("Finding colour module...")
+
 color = client.first(flotilla.Colour)
+
+if color is None:
+    client.stop()
+    sys.exit(1)
 
 try:
     while True:
@@ -25,4 +33,5 @@ try:
             clear=color.clear))
         time.sleep(0.5)
 except KeyboardInterrupt:
+    print("Stopping Flotilla...")
     client.stop()

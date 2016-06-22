@@ -27,6 +27,7 @@ PID = 0x08c3
 LANG_REQUIRES = "Oh no! I need a {module_type} on channel {channel}"
 LANG_FOUND = "Yay! I've found a {module_type} on channel {channel}"
 LANG_READY = "Everything connected properly. Let's go!"
+LANG_COULD_NOT_FIND = "Couldn't find Flotilla. Please try specifying a port."
 
 class Client:
     _module_handlers = {
@@ -107,6 +108,7 @@ class Client:
         self.ready = True
 
     def _find_serial_port(self):
+        check_for = "USB VID:PID={vid:04x}:{pid:04x}".format(vid=VID,pid=PID).upper()
         ports = serial.tools.list_ports.comports()
 
         for check_port in ports:
@@ -114,10 +116,11 @@ class Client:
                 if (check_port.vid, check_port.pid) == (VID, PID):
                     return check_port.device
                 continue
-            if "USB VID:PID={vid}:{pid}".format(vid=hex(VID)[2:].upper(),pid=hex(PID)[2:].upper()) in check_port[2].upper():
+
+            if check_for in check_port[2].upper():
                 return check_port[0]
 
-        raise AttributeError("Couldn't find Flotilla. Please try specifying a port.")
+        raise AttributeError(LANG_COULD_NOT_FIND)
 
     def _check_flotilla_server(self):
         try:
