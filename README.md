@@ -2,11 +2,22 @@
 
 This library interfaces with Flotilla over USB serial.
 
-### How to use:  
-Grab the code from GitHub: git clone https://github.com/pimoroni/flotilla-python
+## Installing
 
-Change into the freshly cloned directory: cd flotilla-python/library
+We've created an installation script that will install the Flotilla python API and update your Dock in the process. To run it fire up Terminal which you'll find in Menu -> Accessories -> Terminal on your Raspberry Pi desktop like so:
 
-Install: sudo python3 setup.py install
+![Finding the terminal](terminal.jpg)
 
-If you've installed Rockpool, you need to shut down the Flotilla Daemon before you start talking python: sudo service flotillad stop
+In the new terminal window type the following and follow the instructions:
+
+```bash
+curl -sS https://get.pimoroni.com/flotilla | bash
+```
+
+## IMPORTANT 
+
+If you've installed Rockpool, you need to shut down the Flotilla Daemon before you start talking to the dock using the present python API:
+
+```bash
+sudo service flotillad stop
+```
