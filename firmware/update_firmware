@@ -124,7 +124,7 @@ else
         sudo python $dockpytool
         firmwared=$($dockpytool | grep "Version")
         servd_trig $servd start
-        if $dockpytool | grep "$firmwarev" > /dev/null; then
+        if [[ "$firmwared" == "Version: $firmwared" ]]; then
             newline
             echo "Your dock is already flashed with the latest firmware"
             if confirm "Would you like to reflash it anyway?"; then
