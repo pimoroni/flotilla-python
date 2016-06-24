@@ -19,6 +19,7 @@ was written for this script.
 
 DISCLAIMER
 
+pathoverride="yes"
 dfubinpath="./dfu-programmer"
 dockhexpath="./flotilla-dock.hex"
 dockpytool="./firmware-version.py"
@@ -29,7 +30,7 @@ confirm() {
         true
     else
         read -r -p "$1 [y/N] " response < /dev/tty
-        if [[ $response =~ ^(yes|y)$ ]]; then
+        if [[ $response =~ ^(yes|y|Y)$ ]]; then
             true
         else
             false
@@ -52,7 +53,7 @@ newline() {
 sudocheck() {
     if [ $(id -u) -ne 0 ]; then
         echo -e "Install must be run as root. Try 'sudo ./$scriptname'\n"
-        exit
+        exit 1
     fi
 }
 
@@ -76,14 +77,16 @@ os_check() {
 os_check
 sudocheck
 
-if $IS_RASPBIAN; then
-    dfubinpath="./raspi/dfu-programmer"
-elif $IS_MACOSX; then
-    dfubinpath="./macosx/dfu-programmer"
-elif $IS_X86_64; then
-    dfubinpath="./linux/dfu-programmer-amd64"
-else
-    dfubinpath="./linux/dfu-programmer-i386"
+if [ $pathoverride == "yes" ]; then
+    if $IS_RASPBIAN; then
+        dfubinpath="./raspi/dfu-programmer"
+    elif $IS_MACOSX; then
+        dfubinpath="./macosx/dfu-programmer"
+    elif $IS_X86_64; then
+        dfubinpath="./linux/dfu-programmer-amd64"
+    else
+        dfubinpath="./linux/dfu-programmer-i386"
+    fi
 fi
 
 echo "Flotilla Firmware Updater"
@@ -94,7 +97,11 @@ if [ -f $dockhexpath ] || [ -L $dockhexpath ]; then
 else
     warning "No flotilla-dock.hex file found. Exiting!"
     newline
-    exit
+    exit 1
+fi
+
+if ! $IS_MACOSX; then
+    sudo service flotillad stop &> /dev/null
 fi
 
 if python -c "import flotilla" 2>&1 >/dev/null | grep "No module named flotilla"; then
@@ -105,7 +112,7 @@ if python -c "import flotilla" 2>&1 >/dev/null | grep "No module named flotilla"
     newline
 else
     success "Please plug in your Flotilla Dock now."
-    read -rsp $'Press any key to continue...\n' -n1 key
+    read -rsp $'Press any key to continue...\n' -n1 key < /dev/tty
     newline
     echo "Reading current firmware version..."
     sleep 5
@@ -124,18 +131,18 @@ else
         else
             echo "Your dock firmware will be updated to"
             echo "Version: $firmwarev"
-            if [[ "$firmwared" < "Version: 1.00" ]];then
-                newline
+            newline
+            if [[ "$firmwared" < "Version: 1.00" ]]; then
                 warning "Note: This update will break compatibility with older versions"
                 warning "of flotilla and rockpool. Press CTRL+C now if you wish to abort."
                 newline
-                read -rsp $'Press any key to continue...\n' -n1 key
+                read -rsp $'Press any key to continue...\n' -n1 key < /dev/tty
             fi
         fi
     fi
 fi
 
-if command -v lsusb > /dev/null;then
+if command -v lsusb > /dev/null; then
 
     RESULT=$(lsusb -d 16d0:08c3)
 
@@ -161,7 +168,7 @@ if command -v lsusb > /dev/null;then
     sudo $dfubinpath atxmega32a4u erase
     sudo $dfubinpath atxmega32a4u flash $dockhexpath
 
-elif command -v ioreg > /dev/null;then
+elif command -v ioreg > /dev/null; then
 
     HEXDOCK=$(ioreg | grep "Flotilla Dock")
     DFUDOCK=$(ioreg | grep "Flotilla DFU")
@@ -193,10 +200,10 @@ else
     sudo sleep 2
     newline
     success "Plug in your Flotilla Dock now."
-    read -rsp $'Press any key to continue...\n' -n1 key
+    read -rsp $'Press any key to continue...\n' -n1 key < /dev/tty
     newline
 
-    if sudo $dfubinpath atxmega32a4u erase 2>&1 | grep -q "no device present";then
+    if sudo $dfubinpath atxmega32a4u erase 2>&1 | grep -q "no device present"; then
         warning "No Flotilla Dock detected!"
         exit
     fi
@@ -206,5 +213,9 @@ fi
     success "Dock Firmware Update completed"
     warning "Please unplug/replug your Flotilla Dock before use!"
     newline
+
+if ! $IS_MACOSX; then
+    sudo service flotillad start &> /dev/null
+fi
 
 exit 0
