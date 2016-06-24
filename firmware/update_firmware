@@ -100,6 +100,10 @@ else
     exit 1
 fi
 
+if ! $IS_MACOSX; then
+    sudo service flotillad stop &> /dev/null
+fi
+
 if python -c "import flotilla" 2>&1 >/dev/null | grep "No module named flotilla"; then
     echo "The flotilla Python API is not installed."
     echo "This is not essential to update the firmware"
@@ -209,5 +213,9 @@ fi
     success "Dock Firmware Update completed"
     warning "Please unplug/replug your Flotilla Dock before use!"
     newline
+
+if ! $IS_MACOSX; then
+    sudo service flotillad start &> /dev/null
+fi
 
 exit 0
