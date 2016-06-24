@@ -24,6 +24,7 @@ dfubinpath="./dfu-programmer"
 dockhexpath="./flotilla-dock.hex"
 dockpytool="./firmware-version.py"
 firmwarev="1.14"
+servd="flotillad"
 
 confirm() {
     if [ "$FORCE" == '-y' ]; then
@@ -74,6 +75,12 @@ os_check() {
     fi
 }
 
+servdtrig() {
+    if command -v service > /dev/null; then
+        sudo service $1 $2
+    fi
+}
+
 os_check
 sudocheck
 
@@ -100,10 +107,6 @@ else
     exit 1
 fi
 
-if ! $IS_MACOSX; then
-    sudo service flotillad stop &> /dev/null
-fi
-
 if python -c "import flotilla" 2>&1 >/dev/null | grep "No module named flotilla"; then
     echo "The flotilla Python API is not installed."
     echo "This is not essential to update the firmware"
@@ -111,6 +114,7 @@ if python -c "import flotilla" 2>&1 >/dev/null | grep "No module named flotilla"
     echo "\curl -sS get.pimoroni.com/flotilla | bash"
     newline
 else
+    servdtrig $servd stop
     success "Please plug in your Flotilla Dock now."
     read -rsp $'Press any key to continue...\n' -n1 key < /dev/tty
     newline
@@ -119,6 +123,7 @@ else
     if [ -f $dockpytool ]; then
         sudo python $dockpytool
         firmwared=$($dockpytool | grep "Version")
+        servdtrig $servd start
         if $dockpytool | grep "$firmwarev" > /dev/null; then
             newline
             echo "Your dock is already flashed with the latest firmware"
@@ -126,7 +131,7 @@ else
                 newline
             else
                 newline
-                exit
+                exit 1
             fi
         else
             echo "Your dock firmware will be updated to"
@@ -205,7 +210,7 @@ else
 
     if sudo $dfubinpath atxmega32a4u erase 2>&1 | grep -q "no device present"; then
         warning "No Flotilla Dock detected!"
-        exit
+        exit 1
     fi
     sudo $dfubinpath atxmega32a4u flash $dockhexpath
 fi
@@ -213,9 +218,5 @@ fi
     success "Dock Firmware Update completed"
     warning "Please unplug/replug your Flotilla Dock before use!"
     newline
-
-if ! $IS_MACOSX; then
-    sudo service flotillad start &> /dev/null
-fi
 
 exit 0
