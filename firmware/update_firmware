@@ -123,14 +123,14 @@ else
     if [ -f $dockpytool ]; then
         sudo python $dockpytool
         firmwared=$($dockpytool | grep "Version")
-        servd_trig $servd start
-        if [[ "$firmwared" == "Version: $firmwared" ]]; then
+        if [[ "$firmwared" == "Version: $firmwarev" ]]; then
             newline
             echo "Your dock is already flashed with the latest firmware"
             if confirm "Would you like to reflash it anyway?"; then
                 newline
             else
                 newline
+                servd_trig $servd start
                 exit 1
             fi
         else
@@ -214,6 +214,7 @@ else
     fi
     sudo $dfubinpath atxmega32a4u flash $dockhexpath
 fi
+    servd_trig $servd start
     newline
     success "Dock Firmware Update completed"
     warning "Please unplug/replug your Flotilla Dock before use!"
