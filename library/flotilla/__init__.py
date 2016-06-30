@@ -387,7 +387,7 @@ Try: kill {pid}""".format(pid=pid))
             if character:
                 command += character
 
-            time.sleep(0.001)
+            time.sleep(0.0001)
 
     def stop(self):
         if not self.running:
