@@ -376,7 +376,10 @@ Try: kill {pid}""".format(pid=pid))
     def _poll_serial(self):
         command = ""
         while self.running:
-            character = self.serial.read(1).decode()
+            try:
+                character = self.serial.read(1).decode()
+            except UnicodeDecodeError:
+                continue
 
             if character == "\n":
                 c = threading.Thread(target=self._handle_command, args=(command,))
