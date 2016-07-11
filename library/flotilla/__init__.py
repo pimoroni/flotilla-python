@@ -177,12 +177,12 @@ Try: kill {pid}""".format(pid=pid))
         return True
 
     def _serial_write(self, data):
-        self._debug("Sending: {}".format(data))
+        self._debug("Sending: {}".format(data.encode('utf8')))
         
-        try:
-            data = bytes(data + "\r", "ascii")
-        except TypeError:
-            data = bytes(data + "\r")
+        if str is bytes:
+            data = (data + "\r").encode('cp437')
+        else:
+            data = bytes(data, 'cp437') + b"\r"
 
         self.serial.write(data)
 
@@ -193,7 +193,11 @@ Try: kill {pid}""".format(pid=pid))
             @name - The dock name to set, max 8 chars
         '''
         name = name[0:8]
-        self._serial_write("n d {}".format(name))
+
+        if hasattr(name, 'decode'):
+            name = name.decode('utf-8')
+
+        self._serial_write("n d " + name)
 
     def set_dock_user(self, user):
         '''Update the saved user name in dock EEPROM
@@ -202,7 +206,11 @@ Try: kill {pid}""".format(pid=pid))
             @user - The user name to set, max 8 chars
         '''
         user = user[0:8]
-        self._serial_write("n u {}".format(user))
+
+        if hasattr(name, 'decode'):
+            name = name.decode('utf-8')
+
+        self._serial_write("n u " + user)
 
     def request_version_info(self):
         self._serial_write("v")
@@ -267,6 +275,9 @@ Try: kill {pid}""".format(pid=pid))
         return self._module_handlers.keys()
 
     def _handle_command(self, command):
+        if bytes is not str:
+            command = command.decode('utf-8')
+        
         self._debug("Command: {}".format(command))
 
         command = command.strip()
@@ -374,20 +385,20 @@ Try: kill {pid}""".format(pid=pid))
         pass
 
     def _poll_serial(self):
-        command = ""
+        command = b""
         while self.running:
-            try:
-                character = self.serial.read(1).decode()
-            except UnicodeDecodeError:
-                continue
+            #try:
+            character = self.serial.read(1).decode('cp437', errors='replace').encode('utf-8') # Extended ASCII/CP437
+            #except UnicodeDecodeError:
+            #    continue
 
-            if character == "\n":
+            if character == b"\n":
                 c = threading.Thread(target=self._handle_command, args=(command,))
                 c.start()
-                command = ""
+                command = b""
                 continue
 
-            if character:
+            if len(character) > 0:
                 command += character
 
             time.sleep(0.0001)
