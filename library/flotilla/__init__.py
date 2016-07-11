@@ -89,7 +89,10 @@ class Client:
 
         self.serial = serial.Serial(self.port, self.baud, timeout=0)
 
-        self._start()
+        try:
+            self._start()
+        finally:
+            self.stop()
 
     def _start(self):
         self.running = True
@@ -267,6 +270,9 @@ Try: kill {pid}""".format(pid=pid))
         return self._module_handlers.keys()
 
     def _handle_command(self, command):
+        if bytes is not str:
+            command = command.decode('utf-8')
+        
         self._debug("Command: {}".format(command))
 
         command = command.strip()
@@ -374,20 +380,20 @@ Try: kill {pid}""".format(pid=pid))
         pass
 
     def _poll_serial(self):
-        command = ""
+        command = b""
         while self.running:
-            try:
-                character = self.serial.read(1).decode()
-            except UnicodeDecodeError:
-                continue
+            #try:
+            character = self.serial.read(1).decode('cp437', errors='replace').encode('utf-8') # Extended ASCII/CP437
+            #except UnicodeDecodeError:
+            #    continue
 
-            if character == "\n":
+            if character == b"\n":
                 c = threading.Thread(target=self._handle_command, args=(command,))
                 c.start()
-                command = ""
+                command = b""
                 continue
 
-            if character:
+            if len(character) > 0:
                 command += character
 
             time.sleep(0.0001)
