@@ -89,10 +89,7 @@ class Client:
 
         self.serial = serial.Serial(self.port, self.baud, timeout=0)
 
-        try:
-            self._start()
-        finally:
-            self.stop()
+        self._start()
 
     def _start(self):
         self.running = True
@@ -196,7 +193,7 @@ Try: kill {pid}""".format(pid=pid))
             @name - The dock name to set, max 8 chars
         '''
         name = name[0:8]
-        self._serial_write("n d {}".format(name))
+        self._serial_write("n d {}".format(name.decode('utf-8').encode('cp437')))
 
     def set_dock_user(self, user):
         '''Update the saved user name in dock EEPROM
@@ -205,7 +202,7 @@ Try: kill {pid}""".format(pid=pid))
             @user - The user name to set, max 8 chars
         '''
         user = user[0:8]
-        self._serial_write("n u {}".format(user))
+        self._serial_write("n u {}".format(user.decode('utf-8').encode('cp437')))
 
     def request_version_info(self):
         self._serial_write("v")
