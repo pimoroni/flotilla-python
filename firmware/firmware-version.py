@@ -8,4 +8,4 @@ try:
 Version: {dock_version}'''.format(dock_version=client.dock_version))
     client.stop()
 except AttributeError:
-    print('No dock found! (firmware version unreadable)')
+    print('Firmware version unreadable')
