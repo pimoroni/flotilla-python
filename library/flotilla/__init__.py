@@ -177,12 +177,12 @@ Try: kill {pid}""".format(pid=pid))
         return True
 
     def _serial_write(self, data):
-        self._debug("Sending: {}".format(data))
+        self._debug("Sending: {}".format(data.encode('utf8')))
         
-        try:
-            data = bytes(data + "\r", "ascii")
-        except TypeError:
-            data = bytes(data + "\r")
+        if str is bytes:
+            data = (data + "\r").encode('cp437')
+        else:
+            data = bytes(data, 'cp437') + b"\r"
 
         self.serial.write(data)
 
@@ -193,7 +193,11 @@ Try: kill {pid}""".format(pid=pid))
             @name - The dock name to set, max 8 chars
         '''
         name = name[0:8]
-        self._serial_write("n d {}".format(name.decode('utf-8').encode('cp437')))
+
+        if hasattr(name, 'decode'):
+            name = name.decode('utf-8')
+
+        self._serial_write("n d " + name)
 
     def set_dock_user(self, user):
         '''Update the saved user name in dock EEPROM
@@ -202,7 +206,11 @@ Try: kill {pid}""".format(pid=pid))
             @user - The user name to set, max 8 chars
         '''
         user = user[0:8]
-        self._serial_write("n u {}".format(user.decode('utf-8').encode('cp437')))
+
+        if hasattr(name, 'decode'):
+            name = name.decode('utf-8')
+
+        self._serial_write("n u " + user)
 
     def request_version_info(self):
         self._serial_write("v")
