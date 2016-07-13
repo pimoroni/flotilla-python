@@ -28,5 +28,5 @@ class Motor(Module):
 	    self.set_speed(speed)
 		
     def set_speed(self, speed):
-        self._speed = self.clamp(_speed, -63, 63)
+        self._speed = self.clamp(speed, -63, 63)
         self.update()
