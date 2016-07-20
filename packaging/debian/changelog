@@ -1,0 +1,27 @@
+flotilla (0.0.4) UNRELEASED; urgency=low
+
+  * motor set_speed fix
+  * pyserial 2.7 enforced as minimum
+
+ -- Phil Howard <phil@pimoroni.com>  Wed, 20 Jul 2016 00:00:00 +0000
+
+flotilla (0.0.3) UNRELEASED; urgency=low
+
+  * shipshape branch merge
+  * pyserial 2.6 enforced as minimum
+
+ -- Phil Howard <phil@pimoroni.com>  Wed, 22 Jun 2016 00:00:00 +0000
+
+flotilla (0.0.2) UNRELEASED; urgency=low
+
+  * program and install bug fixes
+  * pyserial added as dependency
+
+ -- Phil Howard <phil@pimoroni.com>  Tue, 22 Dec 2015 00:00:00 +0000
+ 
+
+flotilla (0.0.1) UNRELEASED; urgency=low
+
+  * Initial release
+
+ -- Phil Howard <phil@pimoroni.com>  Fri, 04 Dec 2015 00:00:00 +0000
