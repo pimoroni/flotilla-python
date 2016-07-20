@@ -1,0 +1,6 @@
+README
+
+Flotilla is a range of smart, friendly, and affordable modules which you connect together to create amazing projects which sense and react to the world around them.
+
+Learn more: http://flotil.la
+For examples run: `curl -sS get.pimoroni.com/flotilla | bash`
