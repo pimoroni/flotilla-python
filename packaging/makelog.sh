@@ -1,7 +1,12 @@
 #!/bin/bash
 
 mainlog="CHANGELOG"
+debianlog="debian/changelog"
 pypilog="../library/CHANGELOG.txt"
+
+# generate debian changelog
+
+cat $mainlog > $debianlog
 
 # generate pypi changelog
 

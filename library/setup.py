@@ -48,5 +48,5 @@ setup(name          = 'flotilla',
     url             = 'http://www.pimoroni.com',
     classifiers     = classifiers,
     packages        = ['flotilla'],
-    install_requires= ['pyserial >= 2.7']
+    install_requires= ['pyserial >= 2.6']
 )
