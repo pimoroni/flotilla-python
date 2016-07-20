@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 """
-Copyright (c) 2014 Pimoroni
+Copyright (c) 2016 Pimoroni
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
@@ -37,16 +37,16 @@ classifiers = ['Development Status :: 5 - Production/Stable',
                'Topic :: Software Development',
                'Topic :: System :: Hardware']
 
-setup(name      = 'flotilla',
-    version     = '0.0.3',
-    author      = 'Philip Howard',
-    author_email= 'phil@pimoroni.com',
-    description = 'Flotilla Python Serial API',
+setup(name          = 'flotilla',
+    version         = '0.0.4',
+    author          = 'Philip Howard',
+    author_email    = 'phil@pimoroni.com',
+    description     = 'Flotilla Python Serial API',
     long_description= open('README.md').read() + open('CHANGELOG.txt').read(),
-    license     = 'MIT',
-    keywords    = 'Raspberry Pi Flotilla',
-    url         = 'http://www.pimoroni.com',
-    classifiers = classifiers,
-    packages    = ['flotilla'],
+    license         = 'MIT',
+    keywords        = 'Raspberry Pi Flotilla',
+    url             = 'http://www.pimoroni.com',
+    classifiers     = classifiers,
+    packages        = ['flotilla'],
     install_requires= ['pyserial >= 2.7']
 )

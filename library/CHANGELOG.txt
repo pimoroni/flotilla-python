@@ -1,0 +1,25 @@
+0.0.4
+-----
+
+* motor set_speed fix
+* pyserial 2.7 enforced as minimum
+
+0.0.3
+-----
+
+* shipshape branch merge
+* pyserial 2.6 enforced as minimum
+
+0.0.2
+-----
+
+* program and install bug fixes
+* pyserial added as dependency
+
+ 
+
+0.0.1
+-----
+
+* Initial release
+
