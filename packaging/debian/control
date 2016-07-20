@@ -1,0 +1,31 @@
+Source: flotilla
+Maintainer: Phil Howard <phil@pimoroni.com>
+Homepage: https://github.com/pimoroni/flotilla-python
+Section: python
+Priority: optional
+Build-Depends: debhelper (>= 9.0.0), dh-python, python-all (>= 2.7), python-setuptools, python3-all (>= 3.4), python3-setuptools
+Standards-Version: 3.9.6
+X-Python-Version: >= 2.7
+X-Python3-Version: >= 3.4
+
+Package: python-flotilla
+Architecture: all
+Section: python
+Depends: ${misc:Depends}, ${python:Depends}, python-serial (>= 2.6)
+Description: python library designed to control Flotilla modules.
+ Flotilla is a range of smart, friendly, and affordable modules which you
+ connect together to create amazing projects which sense and react to
+ the world around them.
+ .
+ This is the Python 2 version of the package.
+
+Package: python3-flotilla
+Architecture: all
+Section: python
+Depends: ${misc:Depends}, ${python3:Depends}, python3-serial (>= 2.6)
+Description: python library designed to control Flotilla modules.
+ Flotilla is a range of smart, friendly, and affordable modules which you
+ connect together to create amazing projects which sense and react to
+ the world around them.
+ .
+ This is the Python 3 version of the package.

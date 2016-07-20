@@ -1,6 +1,14 @@
 # Flotilla Python Examples
 
-These are basic examples for Flotilla controlled via Python
+These are basic examples for Flotilla controlled via Python.
+
+## IMPORTANT 
+
+If you've installed Rockpool, you need to shut down the Flotilla Daemon before you start talking to the dock using the present python API:
+
+```bash
+sudo service flotillad stop
+```
 
 identify.py
 --------------
