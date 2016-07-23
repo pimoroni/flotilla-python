@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
-print("""
-This example will display random numbers on the Number display
-""")
-
-
 import flotilla
 import time
 from random import randint
+
+print("""
+This example will display random numbers on the Number display
+""")
 
 client = flotilla.Client()
 

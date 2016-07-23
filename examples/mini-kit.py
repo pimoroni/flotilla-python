@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+import flotilla
+import time, colorsys
+
 print("""
 This example requires a Touch and Rainbow module,
 you'll find these in the mini kit.
@@ -9,10 +12,6 @@ your mood lighting!
 
 Press Ctrl+C to exit.
 """)
-
-import colorsys
-import flotilla
-import time
 
 client = flotilla.Client(
    requires={
