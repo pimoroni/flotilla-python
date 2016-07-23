@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
+import flotilla
+import time
+
+
 print("""This example will read the temperature and pressure from any connected weather modules.
 
 Press Ctrl+C to exit.""")
 
-import flotilla
-import time
 
 client = flotilla.Client()
 

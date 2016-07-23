@@ -1,5 +1,8 @@
 #!/usr/bin/env python
 
+import flotilla
+import time
+
 print("""
 This example will iterate through all connected Flotilla modules,
 find each Matrix, and blink one of the pixels.
@@ -8,8 +11,6 @@ It demonstrates how to find connected modules and identify a module by type.
 
 Press CTRL+C to exit.
 """)
-import flotilla
-import time
 
 c = flotilla.Client()
 

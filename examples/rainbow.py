@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
 import flotilla
-import time
-import colorsys
+import time, colorsys
 
 client = flotilla.Client(
         requires={
