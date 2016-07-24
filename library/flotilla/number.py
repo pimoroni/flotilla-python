@@ -1,5 +1,6 @@
 from .module import Module
 
+
 NUM_DOT = 1
 NUM_MID = 2
 NUM_TL = 4

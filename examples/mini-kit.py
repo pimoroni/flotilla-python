@@ -1,7 +1,10 @@
 #!/usr/bin/env python
 
+import colorsys
+import time
+
 import flotilla
-import time, colorsys
+
 
 print("""
 This example requires a Touch and Rainbow module,

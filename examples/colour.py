@@ -1,7 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
+
+import sys
+import time
 
 import flotilla
-import time, sys
+
 
 print("""
 Check colour
