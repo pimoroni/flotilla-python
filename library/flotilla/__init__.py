@@ -1,3 +1,10 @@
+import atexit
+import re
+import sys
+import threading
+import time
+from subprocess import check_output, CalledProcessError
+
 try:
     import serial
     import serial.tools.list_ports
@@ -18,8 +25,6 @@ from .light import Light
 from .weather import Weather
 from .colour import Colour
 
-from subprocess import check_output, CalledProcessError
-import atexit, re, sys, threading, time
 
 VID = 0x16d0
 PID = 0x08c3

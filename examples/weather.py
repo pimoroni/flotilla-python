@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
-import flotilla
 import time
+
+import flotilla
 
 
 print("""This example will read the temperature and pressure from any connected weather modules.

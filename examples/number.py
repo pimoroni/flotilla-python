@@ -1,8 +1,10 @@
 #!/usr/bin/env python
 
-import flotilla
 import time
 from random import randint
+
+import flotilla
+
 
 print("""
 This example will display random numbers on the Number display

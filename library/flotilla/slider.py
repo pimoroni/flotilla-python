@@ -1,5 +1,6 @@
 from .module import Module
 
+
 class Slider(Module):
     name = 'slider'
     

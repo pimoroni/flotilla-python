@@ -1,5 +1,6 @@
 import time
 
+
 class NoModule:
     def is_a(self, module_type):
         return isinstance(self, module_type)
