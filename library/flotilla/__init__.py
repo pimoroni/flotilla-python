@@ -12,18 +12,18 @@ except ImportError:
     exit("This library requires the serial module\nInstall with: sudo pip install pyserial")
 
 from .module import Module, NoModule
-from .dial import Dial
-from .slider import Slider
-from .motion import Motion
-from .number import Number
-from .matrix import Matrix
-from .joystick import Joystick
-from .motor import Motor
-from .touch import Touch
-from .rainbow import Rainbow
-from .light import Light
-from .weather import Weather
 from .colour import Colour
+from .dial import Dial
+from .joystick import Joystick
+from .light import Light
+from .matrix import Matrix
+from .motion import Motion
+from .motor import Motor
+from .number import Number
+from .rainbow import Rainbow
+from .slider import Slider
+from .touch import Touch
+from .weather import Weather
 
 
 VID = 0x16d0
