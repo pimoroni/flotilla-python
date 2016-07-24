@@ -1,12 +1,14 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
+
+import sys
+import time
+
+import flotilla
+
+
 print("""
 Check colour
 """)
-
-
-import flotilla
-import time
-import sys
 
 COLOR_INFO = "{red},{green},{blue},{clear}"
 client = flotilla.Client()

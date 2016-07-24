@@ -1,13 +1,14 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
+
+import time
+from random import randint
+
+import flotilla
+
 
 print("""
 This example will display random numbers on the Number display
 """)
-
-
-import flotilla
-import time
-from random import randint
 
 client = flotilla.Client()
 
