@@ -195,30 +195,28 @@ class Number(Module):
         dots = [".", ","]
         digit = 0
 
-        for x in range(length):
+        for x in range(len(string)):
             if digit > 3:
                 continue
 
             char = string[x]
-            if char = is in dots:
-                if x == 0 or string[x - 1] is in dots:
+            if char  in dots:
+                if x == 0 or string[x - 1]  in dots:
                     self.set_char(digit, char, 0)
                     digit += 1
                 else:
                     self.set_char(digit - 1, string[x - 1], 1)
-            else if char = ":" and digit == 2:
+            elif char == ":" and digit == 2:
                 self.set_colon(1)
             else: 
                 self.set_char(digit, char, 0)
                 digit += 1
-           
 
     def set_char(self, digit, value, dot=0):
         if 0 > digit > 3:
             raise ValueError("Digit must be between 0 and 3")
 
-        char = self._get_char(value)   
-
+        char = self._get_char(value)
         self.digits[digit] = char + dot
 
     def set_temp(self, value):
@@ -239,11 +237,11 @@ class Number(Module):
 
     def set_current_time(self, colon=1):
         self.set_string(time.strftime("%H%M"))
-        if colon < 0 or value > 1:
+        if colon < 0 or colon > 1:
             raise ValueError("Unsupported value for colon")
         self.set_colon(colon)
 
-    def _get_char(char):
+    def _get_char(self, char):
         char_ordinal = None
 
         try:
@@ -251,8 +249,8 @@ class Number(Module):
         except TypeError:
             pass
 
-        if char_ordinal is None or char_ordinal > len(_font):
+        if char_ordinal is None or char_ordinal > len(self._font):
             raise ValueError("Unsupported char {}".for_mat(char))
 
-        return _font[char_ordinal]
-        
+        return self._font[char_ordinal]
+
