@@ -182,7 +182,7 @@ class Number(Module):
         self.apostrophe = value
 
     def set_brightness(self, value):
-        if value < 0 or value > 100:
+        if value < 0 or value > 255:
             raise ValueError("Unsupported value for brightness")
 
         self.brightness = value
