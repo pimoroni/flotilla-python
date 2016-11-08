@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import sys
 import time
+from sys import exit
 
 import flotilla
 
@@ -24,7 +24,7 @@ color = client.first(flotilla.Colour)
 
 if color is None:
     client.stop()
-    sys.exit(1)
+    exit(1)
 
 try:
     while True:

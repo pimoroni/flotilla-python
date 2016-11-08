@@ -1,8 +1,12 @@
+0.0.5
+-----
+
+* fix for set_dock_user
+
 0.0.4
 -----
 
 * motor set_speed fix
-* pyserial 2.7 enforced as minimum
 
 0.0.3
 -----

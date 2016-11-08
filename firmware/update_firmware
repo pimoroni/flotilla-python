@@ -19,12 +19,25 @@ was written for this script.
 
 DISCLAIMER
 
+# script control variables
+
+armhfonly="no" # whether the script is allowed to run on other arch
+armv6="yes" # whether armv6 processors are supported
+armv7="yes" # whether armv7 processors are supported
+armv8="yes" # whether armv8 processors are supported
+raspbianonly="no" # whether the script is allowed to run on other OSes
+osreleases=( "Raspbian" "Mate" "PiTop" ) # list os-releases supported
+oswarning=( "Debian" "Ubuntu" ) # list experimental os-releases
+osdeny=( "Darwin" "Kali" ) # list os-releases specifically disallowed
+
 pathoverride="yes"
 dfubinpath="./dfu-programmer"
 dockhexpath="./flotilla-dock.hex"
 dockpytool="./firmware-version.py"
 firmwarev="1.14"
 servd="flotillad"
+
+# function define
 
 confirm() {
     if [ "$FORCE" == '-y' ]; then
@@ -39,12 +52,25 @@ confirm() {
     fi
 }
 
+prompt() {
+        read -r -p "$1 [y/N] " response < /dev/tty
+        if [[ $response =~ ^(yes|y|Y)$ ]]; then
+            true
+        else
+            false
+        fi
+}
+
 success() {
-    echo "$(tput setaf 2)$1$(tput sgr0)"
+    echo -e "$(tput setaf 2)$1$(tput sgr0)"
+}
+
+inform() {
+    echo -e "$(tput setaf 6)$1$(tput sgr0)"
 }
 
 warning() {
-    echo "$(tput setaf 1)$1$(tput sgr0)"
+    echo -e "$(tput setaf 1)$1$(tput sgr0)"
 }
 
 newline() {
@@ -58,20 +84,105 @@ sudocheck() {
     fi
 }
 
+arch_check() {
+    IS_ARMHF=false
+    IS_ARMv6=false
+    IS_ARMv7=false
+    IS_ARMv8=false
+    IS_MACOSX=false
+    IS_X86_32=false
+    IS_X86_64=false
+
+    machine=$(uname -m)
+    
+    if [ -n "$machine" ]; then
+        case $machine in
+           "armv6l") IS_ARMHF=true && IS_ARMv6=true;;
+           "armv7l") IS_ARMHF=true && IS_ARMv7=true;;
+           "armv8l") IS_ARMHF=true && IS_ARMv8=true;;
+           "x86_64") IS_ARMHF=false && IS_X86_64=true;;
+           "i386"|"i486"|"i586"|"i686") IS_X86_32=true;;
+           *) warning "unidentified CPU" && exit 1;;
+        esac
+    elif uname -s | grep "Darwin" > /dev/null; then
+        IS_MACOSX=true
+    fi
+}
+
 os_check() {
     IS_RASPBIAN=false
     IS_MACOSX=false
-    IS_X86_64=false
-    IS_X86_32=false
+    IS_SUPPORTED=false
+    IS_EXPERIMENTAL=false
 
-    if [ -f /etc/os-release ] && cat /etc/os-release | grep "Raspbian" > /dev/null; then
-        IS_RASPBIAN=true
-    elif uname -s | grep "Darwin" > /dev/null; then
+    if [ -f /etc/os-release ]; then
+        if cat /etc/os-release | grep "Raspbian" > /dev/null; then
+            IS_RASPBIAN=true
+        fi
+        if command -v apt-get > /dev/null; then
+            for os in ${osreleases[@]}; do
+                if cat /etc/os-release | grep $os > /dev/null; then
+                    IS_SUPPORTED=true && IS_EXPERIMENTAL=false
+                fi
+            done
+            for os in ${oswarning[@]}; do
+                if cat /etc/os-release | grep $os > /dev/null; then
+                    IS_SUPPORTED=false && IS_EXPERIMENTAL=true
+                fi
+            done
+            for os in ${osdeny[@]}; do
+                if cat /etc/os-release | grep $os > /dev/null; then
+                    IS_SUPPORTED=false && IS_EXPERIMENTAL=false
+                fi
+            done
+        fi
+    fi
+    if [ -f ~/.pt-dashboard-config ] || [ -d ~/.pt-dashboard ]; then
+        IS_RASPBIAN=false
+        for os in ${oswarning[@]}; do
+            if [ $os == "PiTop" ]; then
+                IS_SUPPORTED=false && IS_EXPERIMENTAL=true
+            fi
+        done
+        for os in ${osdeny[@]}; do
+            if [ $os == "PiTop" ]; then
+                IS_SUPPORTED=false && IS_EXPERIMENTAL=false
+            fi
+        done
+    fi
+    if [ -d ~/.config/ubuntu-mate ]; then
+        for os in ${osdeny[@]}; do
+            if [ $os == "Mate" ]; then
+                IS_SUPPORTED=false && IS_EXPERIMENTAL=false
+            fi
+        done
+    fi
+    if uname -s | grep "Darwin" > /dev/null; then
         IS_MACOSX=true
-    elif uname -m | grep "x86_64" > /dev/null; then
-        IS_X86_64=true
-    else
-        IS_X86_32=true
+        for os in ${osdeny[@]}; do
+            if [ $os == "Darwin" ]; then
+                IS_SUPPORTED=false && IS_EXPERIMENTAL=false
+            fi
+        done
+    fi
+}
+
+raspbian_check() {
+    IS_SUPPORTED=false
+    IS_EXPERIMENTAL=false
+
+    if [ -f /etc/os-release ]; then
+        if cat /etc/os-release | grep "/sid" > /dev/null; then
+            IS_SUPPORTED=false && IS_EXPERIMENTAL=true
+        elif cat /etc/os-release | grep "stretch" > /dev/null; then
+            IS_SUPPORTED=false && IS_EXPERIMENTAL=true
+        elif cat /etc/os-release | grep "jessie" > /dev/null; then
+            IS_SUPPORTED=true && IS_EXPERIMENTAL=false
+        elif cat /etc/os-release | grep "wheezy" > /dev/null; then
+            IS_SUPPORTED=true && IS_EXPERIMENTAL=false
+        else
+            IS_SUPPORTED=false && IS_EXPERIMENTAL=false
+        fi
     fi
 }
 
@@ -81,18 +192,70 @@ servd_trig() {
     fi
 }
 
+: <<'MAINSTART'
+
+Perform all variables declarations as well as function definition
+above this section for clarity, thanks!
+
+MAINSTART
+
+arch_check
 os_check
 sudocheck
 
+if ! $IS_ARMHF; then
+    warning "This hardware is not supported, sorry!"
+    warning "Config files have been left untouched"
+    newline && exit 1
+fi
+
+if $IS_ARMv8 && [ $armv8 == "no" ]; then
+    warning "Sorry, your CPU is not supported by this installer"
+    newline && exit 1
+elif $IS_ARMv7 && [ $armv7 == "no" ]; then
+    warning "Sorry, your CPU is not supported by this installer"
+    newline && exit 1
+elif $IS_ARMv6 && [ $armv6 == "no" ]; then
+    warning "Sorry, your CPU is not supported by this installer"
+    newline && exit 1
+fi
+
+if [ $raspbianonly == "yes" ] && ! $IS_RASPBIAN;then
+        warning "This script is intended for Raspbian on a Raspberry Pi!"
+        newline && exit 1
+fi
+
+if $IS_RASPBIAN; then
+    raspbian_check
+    if ! $IS_SUPPORTED && ! $IS_EXPERIMENTAL; then
+        newline && warning "--- Warning ---" && newline
+        echo "The $productname installer"
+        echo "does not work on this version of Raspbian."
+        echo "Check https://github.com/$gitusername/$gitreponame"
+        echo "for additional information and support"
+        newline && exit 1
+    fi
+fi
+
+if ! $IS_SUPPORTED && ! $IS_EXPERIMENTAL; then
+        warning "Your operating system is not supported, sorry!"
+        newline && exit 1
+fi
+
+if $IS_EXPERIMENTAL; then
+    warning "Support for your operating system is experimental. Please visit"
+    warning "forums.pimoroni.com if you experience issues with this product."
+    newline
+fi
+
 if [ $pathoverride == "yes" ]; then
-    if $IS_RASPBIAN; then
+    if $IS_ARMHF; then
         dfubinpath="./raspi/dfu-programmer"
     elif $IS_MACOSX; then
         dfubinpath="./macosx/dfu-programmer"
-    elif $IS_X86_64; then
-        dfubinpath="./linux/dfu-programmer-amd64"
     else
-        dfubinpath="./linux/dfu-programmer-i386"
+        dfubinpath="./linux/dfu-programmer-amd64"
+        #dfubinpath="./linux/dfu-programmer-i386"
     fi
 fi
 
