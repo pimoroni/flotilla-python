@@ -1,9 +1,9 @@
 import atexit
 import re
-import sys
 import threading
 import time
 from subprocess import check_output, CalledProcessError
+from sys import exit
 
 try:
     import serial
@@ -25,6 +25,8 @@ from .slider import Slider
 from .touch import Touch
 from .weather import Weather
 
+
+__version__ = '0.0.5'
 
 VID = 0x16d0
 PID = 0x08c3
@@ -197,6 +199,9 @@ Try: kill {pid}""".format(pid=pid))
         Arguments:
             @name - The dock name to set, max 8 chars
         '''
+        if type(name) is not str:
+            raise TypeError("You should pass a string as a parameter")
+
         name = name[0:8]
 
         if hasattr(name, 'decode'):
@@ -210,10 +215,13 @@ Try: kill {pid}""".format(pid=pid))
         Arguments:
             @user - The user name to set, max 8 chars
         '''
+        if type(user) is not str:
+            raise TypeError("You should pass a string as a parameter")
+
         user = user[0:8]
 
-        if hasattr(name, 'decode'):
-            name = name.decode('utf-8')
+        if hasattr(user, 'decode'):
+            user = user.decode('utf-8')
 
         self._serial_write("n u " + user)
 

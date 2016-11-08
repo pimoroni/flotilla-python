@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 
 """
 Copyright (c) 2016 Pimoroni
@@ -37,8 +37,9 @@ classifiers = ['Development Status :: 5 - Production/Stable',
                'Topic :: Software Development',
                'Topic :: System :: Hardware']
 
-setup(name          = 'flotilla',
-    version         = '0.0.4',
+setup(
+    name            = 'flotilla',
+    version         = '0.0.5',
     author          = 'Philip Howard',
     author_email    = 'phil@pimoroni.com',
     description     = 'Flotilla Python Serial API',
