@@ -270,7 +270,7 @@ else
     exit 1
 fi
 
-if python -c "import flotilla" 2>&1 >/dev/null | grep "No module named flotilla"; then
+if python3 -c "import flotilla" 2>&1 >/dev/null | grep "No module named flotilla"; then
     echo "The flotilla Python API is not installed."
     echo "This is not essential to update the firmware"
     echo "but should you wish to you can install it using:"
@@ -284,7 +284,7 @@ else
     echo "Reading current firmware version..."
     sleep 5
     if [ -f $dockpytool ]; then
-        sudo python $dockpytool
+        sudo python3 $dockpytool
         firmwared=$($dockpytool | grep "Version")
         if [[ "$firmwared" == "Version: $firmwarev" ]]; then
             newline

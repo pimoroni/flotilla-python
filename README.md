@@ -21,3 +21,11 @@ If you've installed Rockpool, you need to shut down the Flotilla Daemon before y
 ```bash
 sudo service flotillad stop
 ```
+
+## For Developers
+If you need to modify the flotilla python library you can compile and test:
+```bash
+cd library
+sudo ./setup.py build
+sudo ./setup.py install
+```

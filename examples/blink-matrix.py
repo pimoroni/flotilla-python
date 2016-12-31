@@ -1,9 +1,8 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import time
 
 import flotilla
-
 
 print("""
 This example will iterate through all connected Flotilla modules,
