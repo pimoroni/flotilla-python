@@ -1,26 +1,34 @@
 #!/usr/bin/env python
 
+import sys
 import time
-from random import randint
 
 import flotilla
 
 
 print("""
-This example will display text on the Number display
+This example will display text on the Number display.
 """)
 
-client = flotilla.Client()
+dock = flotilla.Client()
+print("Client connected...")
 
-first_number_display = client.first(flotilla.Number)
+while not dock.ready:
+    pass
 
-if first_number_display is not None:
-    first_number_display.set_brightness(128)
-    first_number_display.set_string("yarr")
-    first_number_display.update()
-    time.sleep(1)
+print("Finding module...")
+number = dock.first(flotilla.Number)
+
+if number is None:
+    print("no Number module found...")
+    dock.stop()
+    sys.exit(1)
 else:
-    print("You must connect a Number first!")
+    print("Found. String displayed...")
 
-client.stop()
+number.set_brightness(128)
+number.set_string("yarr")
+number.update()
+time.sleep(1)
+dock.stop()
 

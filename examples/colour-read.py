@@ -1,30 +1,34 @@
 #!/usr/bin/env python
 
+import sys
 import time
-from sys import exit
 
 import flotilla
 
 
 print("""
-Check colour
+Reading Colour values.
+
+Press CTRL+C to exit.
 """)
 
-COLOR_INFO = "{red},{green},{blue},{clear}"
-client = flotilla.Client()
-
+dock = flotilla.Client()
 print("Client connected...")
 
-while not client.ready:
+while not dock.ready:
     pass
 
-print("Finding colour module...")
-
-color = client.first(flotilla.Colour)
+print("Finding module...")
+color = dock.first(flotilla.Colour)
 
 if color is None:
-    client.stop()
-    exit(1)
+    print("no Colour module found...")
+    dock.stop()
+    sys.exit(1)
+else:
+    print("Found. Running...")
+
+COLOR_INFO = "{red},{green},{blue},{clear}"
 
 try:
     while True:
@@ -36,4 +40,4 @@ try:
         time.sleep(0.5)
 except KeyboardInterrupt:
     print("Stopping Flotilla...")
-    client.stop()
+    dock.stop()
