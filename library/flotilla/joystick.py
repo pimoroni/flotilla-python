@@ -7,7 +7,6 @@ class Joystick(Module):
     name = 'joystick'
 
     def rotation(self, r=0):
-        global _rotation
         global _xstart
         global _ystart
         if r == 0:

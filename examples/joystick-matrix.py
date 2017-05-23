@@ -19,15 +19,18 @@ while not dock.ready:
     pass
 
 print("Finding modules...")
-matrix = dock.first(flotilla.Matrix)
 joystick = dock.first(flotilla.Joystick)
+matrix = dock.first(flotilla.Matrix)
 
-if matrix is None or joystick is None:
+if joystick is None or matrix is None:
     print("modules required not found...")
     dock.stop()
     sys.exit(1)
 else:
     print("Found. Running...")
+
+joystick.rotation(0)
+matrix.rotation(0)
 
 try:
     while True:
