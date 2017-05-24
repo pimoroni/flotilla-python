@@ -1,8 +1,5 @@
 from .module import Module
 
-_xstart = 7
-_ystart = 7
-
 class Matrix(Module):
     name = 'matrix'
 
@@ -10,10 +7,10 @@ class Matrix(Module):
         Module.__init__(self, channel, client)
         self.pixels = [0] * 8
         self.brightness = 40
+        self._xstart = 7
+        self._ystart = 7
 
     def rotation(self, r=0):
-        global _xstart
-        global _ystart
         if r == 0:
             _xstart = 7
             _ystart = 7

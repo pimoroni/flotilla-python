@@ -1,14 +1,14 @@
 from .module import Module
 
-_xstart = 1023
-_ystart = 1023
-
 class Joystick(Module):
     name = 'joystick'
 
+    def __init__(self, channel, client):
+        Module.__init__(self, channel, client)
+        self._xstart = 1023
+        self._ystart = 1023
+
     def rotation(self, r=0):
-        global _xstart
-        global _ystart
         if r == 0:
             _xstart = 1023
             _ystart = 1023
