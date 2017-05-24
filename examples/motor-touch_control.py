@@ -2,10 +2,7 @@
 
 # This code is for the Flotilla Motor and Touch modules,
 # and in my model uses a turntable attached to the Motor
-# Tanya Fish x
-
-# This imports the time library so it can time how long the motor is on for
-# also imports the flotilla library so it can operate the modules
+# Script by Tanya Fish x
 
 import time
 import sys

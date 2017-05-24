@@ -1,8 +1,12 @@
 #!/usr/bin/env python
 
-# gets information about time and how flotilla works
+# Script by Tanya Fish x
+
+import sys
 import time
+
 import flotilla
+
 
 # message comes up when you run the program to show how to stop
 print("""

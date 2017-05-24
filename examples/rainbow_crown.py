@@ -1,10 +1,14 @@
 #!/usr/bin/env python
-#eurovision crown - rainbow lights program
 
-#gets the stuff we need about colours, time and the flotilla modules
+# Eurovision crown - rainbow lights program
+# Script by Tanya Fish x
+
 import colorsys
+import sys
 import time
+
 import flotilla
+
 
 #gives a nice name to the dock
 dock = flotilla.Client()

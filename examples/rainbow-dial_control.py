@@ -1,10 +1,13 @@
 #!/usr/bin/env python
-#joymachine
 
-#needs to know about time and the flotilla modules, and colours
-import time
-import flotilla
+# Script by Tanya Fish x
+
 import colorsys
+import sys
+import time
+
+import flotilla
+
 
 #shortens the name of the thing that runs Flotilla
 dock = flotilla.Client()

@@ -1,10 +1,12 @@
-#work in progress - not finished
+#!/usr/bin/env python
 
-#this imports the time library so it can time how long the motor is on for
-#also imports the flotilla library so it can operate the modules
-import time
-import flotilla
+# Script by Tanya Fish x
+
 import sys
+import time
+
+import flotilla
+
 
 #looks for the dock, and all of the modules we need attached to the dock so we can talk to them
 dock = flotilla.Client()
