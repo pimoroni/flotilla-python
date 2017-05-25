@@ -29,9 +29,9 @@ class Matrix(Module):
 
     def set_pixel(self, x, y, state):
         if state:
-            self.pixels[abs(_xstart-x)] |= (1 << abs(_ystart-y))
+            self.pixels[abs(xstart-x)] |= (1 << abs(ystart-y))
         else:
-            self.pixels[abs(_xstart-x)] &= ~(1 << abs(_ystart-y))
+            self.pixels[abs(xstart-x)] &= ~(1 << abs(ystart-y))
         return self
 
     def update(self):

@@ -25,11 +25,11 @@ class Joystick(Module):
     @property
     def x(self):
         if len(self.data) > 1:
-            return abs(_xstart - int(self.data[1]))
+            return abs(xstart - int(self.data[1]))
         return 0
 
     @property
     def y(self):
         if len(self.data) > 2:
-            return abs(_ystart - int(self.data[2]))
+            return abs(ystart - int(self.data[2]))
         return 0
