@@ -26,7 +26,8 @@ joystick = dock.first(flotilla.Joystick)
 matrix = dock.first(flotilla.Matrix)
 
 if joystick is None or matrix is None:
-    print("modules required not found...")
+    print("Some modules required were not found...")
+    print("Make sure you have a Joystick and a Matrix module attached to the Dock!")
     dock.stop()
     sys.exit(1)
 else:

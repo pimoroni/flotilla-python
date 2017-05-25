@@ -28,7 +28,8 @@ light = dock.first(flotilla.Light)
 number = dock.first(flotilla.Number)
 
 if light is None or number is None:
-    print("modules required not found...")
+    print("Some modules required were not found...")
+    print("Make sure you have a Light and a Number module attached to the Dock!")
     dock.stop()
     sys.exit(1)
 else:

@@ -1,4 +1,4 @@
-#!usr/bin/env/python
+#!/usr/bin/env python
 
 # This code is for the Flotilla Motor and Touch modules,
 # and in my model uses a turntable attached to the Motor
@@ -24,7 +24,8 @@ motor = dock.first(flotilla.Motor)
 touch = dock.first(flotilla.Touch)
 
 if motor is None or touch is None:
-    print("modules required not found...")
+    print("Some modules required were not found...")
+    print("Make sure you have a Motor and a Touch module attached to the Dock!")
     dock.stop()
     sys.exit(1)
 else:
