@@ -8,28 +8,42 @@ import time
 import flotilla
 
 
-# message comes up when you run the program to show how to stop
 print("""
-This example will show the temperature in degrees centigrade on the Number display. Press CTRL + C to exit.
+This example displays the temperature in degrees centigrade on the Number module.
+
+Press CTRL + C to exit.
 """)
 
-#renames the dock
+# Looks for the dock, and all of the modules we need
+# attached to the dock so we can talk to them.
+
 dock = flotilla.Client()
+print("Client connected...")
 
-#looks for the first number display and calls it something more recognisable
-first_number_display = dock.first(flotilla.Number)
+while not dock.ready:
+    pass
 
-#looks for a weather module and displays the temperature on the number block
+print("Finding modules...")
+number = dock.first(flotilla.Number)
+weather = dock.first(flotilla.Weather)
+
+if number is None or weather is None:
+    print("modules required not found...")
+    dock.stop()
+    sys.exit(1)
+else:
+    print("Found. Running...")
+
 try:
     while True:
         for module in dock.available.values():
             if module.is_a(flotilla.Weather):
 
-
-                tempr = module.temperature
-                first_number_display.set_number(int(tempr))
-                first_number_display.update()
+                temp = module.temperature
+                number.set_number(int(temp))
+                number.update()
 
         time.sleep(0.5)
 except KeyboardInterrupt:
+    print("Stopping Flotilla...")
     dock.stop()

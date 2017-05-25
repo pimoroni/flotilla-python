@@ -58,4 +58,5 @@ try:
         rainbow.set_all(r, g, b).update()
         time.sleep(0.1)
 except KeyboardInterrupt:
+    print("Stopping Flotilla...")
     dock.stop()

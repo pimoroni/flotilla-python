@@ -15,6 +15,9 @@ and a light level reading from a Ligh module on the Rainbow module.
 Press CTRL + C to exit.
 """)
 
+# Looks for the dock, and all of the modules we need
+# attached to the dock so we can talk to them.
+
 dock = flotilla.Client()
 print("Client connected...")
 
@@ -74,4 +77,5 @@ try:
         rainbow.update()
 
 except KeyboardInterrupt:
+    print("Stopping Flotilla...")
     dock.stop()

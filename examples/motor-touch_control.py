@@ -10,7 +10,8 @@ import sys
 import flotilla
 
 
-# Looks for the dock, and all of the modules we need attached to the dock so we can talk to them
+# Looks for the dock, and all of the modules we need
+# attached to the dock so we can talk to them.
 
 dock = flotilla.Client()
 print("Client connected...")
@@ -76,4 +77,5 @@ try:
 
 # This listens for a keyboard interrupt, which is Ctrl+C and can stop the program
 except KeyboardInterrupt:
+    print("Stopping Flotilla...")
     dock.stop()

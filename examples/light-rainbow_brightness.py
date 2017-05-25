@@ -15,6 +15,9 @@ and display it on a Rainbow module to reflect measurement.
 Press CTRL + C to exit.
 """)
 
+# Looks for the dock, and all of the modules we need
+# attached to the dock so we can talk to them.
+
 dock = flotilla.Client()
 print("Client connected...")
 
@@ -68,4 +71,5 @@ try:
             rainbow.set_pixel (x, 0, 0, 0)
 
 except KeyboardInterrupt:
+    print("Stopping Flotilla...")
     dock.stop()

@@ -14,6 +14,9 @@ This example will show the light level on the Number display.
 Press CTRL + C to exit.
 """)
 
+# Looks for the dock, and all of the modules we need
+# attached to the dock so we can talk to them.
+
 dock = flotilla.Client()
 print("Client connected...")
 
@@ -44,4 +47,5 @@ try:
                 number.update()
         time.sleep(0.5)
 except KeyboardInterrupt:
+    print("Stopping Flotilla...")
     dock.stop()
