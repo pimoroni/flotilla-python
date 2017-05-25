@@ -7,22 +7,22 @@ class Matrix(Module):
         Module.__init__(self, channel, client)
         self.pixels = [0] * 8
         self.brightness = 40
-        self._xstart = 7
-        self._ystart = 7
+        self.xstart = 7
+        self.ystart = 7
 
     def rotation(self, r=0):
         if r == 0:
-            self._xstart = 7
-            self._ystart = 7
+            self.xstart = 7
+            self.ystart = 7
         elif r == 90:
-            self._xstart = 0
-            self._ystart = 7
+            self.xstart = 0
+            self.ystart = 7
         elif r == 180:
-            self._xstart = 0
-            self._ystart = 0
+            self.xstart = 0
+            self.ystart = 0
         elif r == 270:
-            self._xstart = 7
-            self._ystart = 0
+            self.xstart = 7
+            self.ystart = 0
 
     def set_brightness(self, brightness):
         self.brightness = brightness

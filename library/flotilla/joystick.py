@@ -5,16 +5,16 @@ class Joystick(Module):
 
     def __init__(self, channel, client):
         Module.__init__(self, channel, client)
-        self._xstart = 1023
-        self._ystart = 1023
+        self.xstart = 1023
+        self.ystart = 1023
 
     def rotation(self, r=0):
         if r == 0:
-            self._xstart = 1023
-            self._ystart = 1023
+            self.xstart = 1023
+            self.ystart = 1023
         elif r == 180:
-            self._xstart = 0
-            self._ystart = 0
+            self.xstart = 0
+            self.ystart = 0
 
     @property
     def button(self):
