@@ -12,17 +12,17 @@ class Matrix(Module):
 
     def rotation(self, r=0):
         if r == 0:
-            _xstart = 7
-            _ystart = 7
+            self._xstart = 7
+            self._ystart = 7
         elif r == 90:
-            _xstart = 0
-            _ystart = 7
+            self._xstart = 0
+            self._ystart = 7
         elif r == 180:
-            _xstart = 0
-            _ystart = 0
+            self._xstart = 0
+            self._ystart = 0
         elif r == 270:
-            _xstart = 7
-            _ystart = 0
+            self._xstart = 7
+            self._ystart = 0
 
     def set_brightness(self, brightness):
         self.brightness = brightness

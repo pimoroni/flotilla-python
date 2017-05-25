@@ -10,11 +10,11 @@ class Joystick(Module):
 
     def rotation(self, r=0):
         if r == 0:
-            _xstart = 1023
-            _ystart = 1023
+            self._xstart = 1023
+            self._ystart = 1023
         elif r == 180:
-            _xstart = 0
-            _ystart = 0
+            self._xstart = 0
+            self._ystart = 0
 
     @property
     def button(self):
