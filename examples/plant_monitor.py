@@ -8,57 +8,70 @@ import time
 import flotilla
 
 
-# message comes up when you run the program to show how to stop
 print("""
-This example will show the temperature in degrees centigrade on the Number display, and the barometer reading on the Rainbow display. Press CTRL + C to exit.
+This example displays the temperature in degrees centigrade on the Number module,
+and a light level reading from a Ligh module on the Rainbow module.
+
+Press CTRL + C to exit.
 """)
 
-#renames dock
 dock = flotilla.Client()
+print("Client connected...")
 
-#looks for the first number display and calls it something more recognisable
-#does the same for the first rainbow it finds
-first_number_display = dock.first(flotilla.Number)
-first_rainbow = dock.first(flotilla.Rainbow)
+while not dock.ready:
+    pass
 
+print("Finding modules...")
+light = dock.first(flotilla.Light)
+number = dock.first(flotilla.Number)
+rainbow = dock.first(flotilla.Rainbow)
+weather = dock.first(flotilla.Weather)
 
-#looks for a weather module and displays the temperature on the number block
-#checks the pressure and shows it on the rainbow
+if light is None or number is None or rainbow is None or weather is None:
+    print("modules required not found...")
+    dock.stop()
+    sys.exit(1)
+else:
+    print("Found. Running...")
+
+# Looks for a Weather module and displays the temperature on a Number module.
+# It also checks the light level using a Light module and shows it on a Rainbow module.
+
+r = 0
+g = 255
+b = 0
+
 try:
     while True:
-        weather = dock.first(flotilla.Weather)
-        light = dock.first(flotilla.Light)
-
         if weather:
-            tempr = weather.temperature
-            first_number_display.set_number(int(tempr))
-            first_number_display.update()
-
+            temp = weather.temperature
+            number.set_number(int(temp))
+            number.update()
         if light:
             brightness=light.light
-
-            if brightness > 100:
-                first_rainbow.set_pixel (0, 0, 255, 0)
-            if brightness > 250:
-                first_rainbow.set_pixel (1, 0, 255, 0)
-            if brightness > 400:
-                first_rainbow.set_pixel (2, 0, 255, 0)
-            if brightness > 550:
-                first_rainbow.set_pixel (3, 0, 255, 0)
-            if brightness > 700:
-                first_rainbow.set_pixel (4, 0, 255, 0)
-
-            first_rainbow.update()
+            if brightness > 100 and brightness < 249:
+                for p in range(1):
+                    rainbow.set_pixel (p, r, g, b)
+            elif brightness > 250 and brightness < 399:
+                for p in range(2):
+                    rainbow.set_pixel (p, r, g, b)
+            elif brightness > 400 and brightness < 549:
+                for p in range(3):
+                    rainbow.set_pixel (p, r, g, b)
+            elif brightness > 550 and brightness < 699:
+                for p in range(4):
+                    rainbow.set_pixel (p, r, g, b)
+            elif brightness > 700:
+                for p in range(5):
+                    rainbow.set_pixel (p, r, g, b)
+            rainbow.update()
 
         time.sleep(0.9)
 
-        for x in range(first_rainbow.num_pixels):
-            first_rainbow.set_pixel (x, 0, 0, 0)
+        for x in range(rainbow.num_pixels):
+            rainbow.set_pixel (x, 0, 0, 0)
 
-        first_rainbow.update()
+        rainbow.update()
 
-
-#allows you to stop the program with ctrl and c
 except KeyboardInterrupt:
-
     dock.stop()
