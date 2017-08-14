@@ -7,7 +7,7 @@ import flotilla
 
 
 print("""
-This example will read the temperature and pressure from a Weather module.
+Reading Colour values.
 
 Press CTRL+C to exit.
 """)
@@ -22,18 +22,24 @@ while not dock.ready:
     pass
 
 print("Finding module...")
-weather = dock.first(flotilla.Weather)
+color = dock.first(flotilla.Colour)
 
-if weather is None:
-    print("no Weather module found...")
+if color is None:
+    print("no Colour module found...")
     dock.stop()
     sys.exit(1)
 else:
     print("Found. Running...")
 
+COLOR_INFO = "{red},{green},{blue},{clear}"
+
 try:
     while True:
-        print('Temp: {} Pressure: {}'.format(weather.temperature, weather.pressure))
+        print(COLOR_INFO.format(
+            red= color.red,
+            green=color.green,
+            blue=color.blue,
+            clear=color.clear))
         time.sleep(0.5)
 except KeyboardInterrupt:
     print("Stopping Flotilla...")

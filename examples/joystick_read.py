@@ -12,6 +12,9 @@ Reading Joystick coordinates.
 Press CTRL+C to exit.
 """)
 
+# Looks for the dock, and all of the modules we need
+# attached to the dock so we can talk to them.
+
 dock = flotilla.Client()
 print("Client connected...")
 

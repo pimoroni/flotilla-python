@@ -14,6 +14,9 @@ find each Rainbow, and turn them into beautiful mood lights.
 Press CTRL+C to exit.
 """)
 
+# Looks for the dock, and all of the modules we need
+# attached to the dock so we can talk to them.
+
 dock = flotilla.Client()
 print("Client connected...")
 
@@ -46,4 +49,5 @@ try:
         time.sleep(0.1)
 
 except KeyboardInterrupt:
+    print("Stopping Flotilla...")
     dock.stop()

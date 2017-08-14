@@ -1,21 +1,43 @@
 #!/usr/bin/env python
-#eurovision crown - rainbow lights program
 
-#gets the stuff we need about colours, time and the flotilla modules
+# Eurovision crown - rainbow lights program
+# Script by Tanya Fish x
+
 import colorsys
+import sys
 import time
+
 import flotilla
 
-#gives a nice name to the dock
-dock = flotilla.Client()
 
-#sets the start colour for the lights
+# Looks for the dock, and all of the modules we need
+# attached to the dock so we can talk to them.
+
+dock = flotilla.Client()
+print("Client connected...")
+
+while not dock.ready:
+    pass
+
+print("Finding modules...")
+dial = dock.first(flotilla.Joystick)
+rainbow = dock.first(flotilla.Matrix)
+
+if dial is None or rainbow is None:
+    print("modules required not found...")
+    dock.stop()
+    sys.exit(1)
+else:
+    print("Found. Running...")
+
+# Sets the start colour for the lights
 hue = 0
 pos = 0
 
-#this is the loop that keeps moving through the rainbow, and checks the dial to
-#see how many pixels to light up
-#using if module.is_a thing means it applies to ALL modules of that type
+# This is the loop that keeps moving through the rainbow,
+# and checks Dial to decide how many pixels to light up.
+# The module.is_a() method is used to apply the effect to
+# ALL modules of type Rainbow attached to the dock.
 
 try:
     while True:
@@ -35,6 +57,6 @@ try:
         hue+=1
         hue%=360
 
-#gives you the option to stop the program with ctrl+c
 except KeyboardInterrupt:
+    print("Stopping Flotilla...")
     dock.stop()

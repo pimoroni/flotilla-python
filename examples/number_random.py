@@ -2,15 +2,19 @@
 
 import sys
 import time
+from random import randint
 
 import flotilla
 
 
 print("""
-Reading Colour values.
+This example will display random numbers on the Number display.
 
 Press CTRL+C to exit.
 """)
+
+# Looks for the dock, and all of the modules we need
+# attached to the dock so we can talk to them.
 
 dock = flotilla.Client()
 print("Client connected...")
@@ -19,24 +23,20 @@ while not dock.ready:
     pass
 
 print("Finding module...")
-color = dock.first(flotilla.Colour)
+number = dock.first(flotilla.Number)
 
-if color is None:
-    print("no Colour module found...")
+if number is None:
+    print("no Number module found...")
     dock.stop()
     sys.exit(1)
 else:
     print("Found. Running...")
 
-COLOR_INFO = "{red},{green},{blue},{clear}"
-
 try:
     while True:
-        print(COLOR_INFO.format(
-            red= color.red,
-            green=color.green,
-            blue=color.blue,
-            clear=color.clear))
+        random_number = randint(0,9999)
+        number.set_number(random_number)
+        number.update()
         time.sleep(0.5)
 except KeyboardInterrupt:
     print("Stopping Flotilla...")

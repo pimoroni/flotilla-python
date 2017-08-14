@@ -10,6 +10,9 @@ print("""
 This example will display text on the Number display.
 """)
 
+# Looks for the dock, and all of the modules we need
+# attached to the dock so we can talk to them.
+
 dock = flotilla.Client()
 print("Client connected...")
 

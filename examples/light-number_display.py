@@ -9,7 +9,7 @@ import flotilla
 
 
 print("""
-This example displays the temperature in degrees centigrade on the Number module.
+This example will show the light level on the Number display.
 
 Press CTRL + C to exit.
 """)
@@ -24,25 +24,28 @@ while not dock.ready:
     pass
 
 print("Finding modules...")
+light = dock.first(flotilla.Light)
 number = dock.first(flotilla.Number)
-weather = dock.first(flotilla.Weather)
 
-if number is None or weather is None:
-    print("modules required not found...")
+if light is None or number is None:
+    print("Some modules required were not found...")
+    print("Make sure you have a Light and a Number module attached to the Dock!")
     dock.stop()
     sys.exit(1)
 else:
     print("Found. Running...")
 
+# Reads the light level from a Light module and displays it as a whole number
+# on the first Number module available. Repeats every half a second.
+
 try:
     while True:
         for module in dock.available.values():
-            if module.is_a(flotilla.Weather):
+            if module.is_a(flotilla.Light):
 
-                temp = module.temperature
-                number.set_number(int(temp))
+                brightness = module.light
+                number.set_number(int(brightness))
                 number.update()
-
         time.sleep(0.5)
 except KeyboardInterrupt:
     print("Stopping Flotilla...")

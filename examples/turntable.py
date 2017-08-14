@@ -1,17 +1,35 @@
-#work in progress - not finished
+#!/usr/bin/env python
 
-#this imports the time library so it can time how long the motor is on for
-#also imports the flotilla library so it can operate the modules
-import time
-import flotilla
+# Script by Tanya Fish x
+
 import sys
+import time
 
-#looks for the dock, and all of the modules we need attached to the dock so we can talk to them
+import flotilla
+
+
+# Looks for the dock, and all of the modules we need
+# attached to the dock so we can talk to them.
+
 dock = flotilla.Client()
+print("Client connected...")
+
+while not dock.ready:
+    pass
+
+print("Finding modules...")
 motor = dock.first(flotilla.Motor)
 touch = dock.first(flotilla.Touch)
 
+if motor is None or touch is None:
+    print("modules required not found...")
+    dock.stop()
+    sys.exit(1)
+else:
+    print("Found. Running...")
+
 current_offset=0
+
 def go_to_offset(offset):
     target_offset=offset-current_offset
     motor.set_speed(target_offset)
