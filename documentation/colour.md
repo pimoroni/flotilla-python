@@ -1,12 +1,12 @@
 ## Colour module
 
-The colour module has four light detectors in it: three of them have filters on to only let one colour of light in, and the fourth one lets all light in so can give you a light level.
+The colour module has four light detectors: three of them have filters that only let in one colour of light (red, green or blue), the fourth lets in all light to give you an overall light level.
 
 First, don't forget to get the dock to recognise your module:
 
 `colour = dock.first(flotilla.Colour)`
 
-You can check how much light there is by looking at that fourth sensor and getting it to print the value it reads.
+You can check how much light there is by looking at that fourth sensor and printing its value.
 
 ```python
 print("The amount of light detected is...")
@@ -14,6 +14,7 @@ print(colour.clear)
 ```
 
 In this example the detector takes all four readings and shows them on the screen every 10 seconds.
+
 ```python
 import flotilla
 import time
@@ -34,10 +35,11 @@ except KeyboardInterrupt:
 	dock.stop()
 ```
 
-*Colour summary*
-*`colour.clear` - returns the value from the clear sensor (no filters)*
-*`colour.red` - returns the value from the red sensor*
-*`colour.green` - returns the value from the green sensor*
-*`colour.blue` - returns the value from the blue sensor*
+## Colour summary
+
+* `colour.clear` - returns the value from the clear sensor (no filters)
+* `colour.red` - returns the value from the red sensor
+* `colour.green` - returns the value from the green sensor
+* `colour.blue` - returns the value from the blue sensor
 
 

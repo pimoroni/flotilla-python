@@ -23,23 +23,21 @@ touch = dock.first(flotilla.Touch)
 try:
   while True:
 	if touch.one:
-		print ("Your mother smells of elderberries")
+		print("Your mother smells of elderberries")
 	if touch.two:
-		print ("Your father was a hamster")
+		print("Your father was a hamster")
 	if touch.three:
-		print ("He's a Very Naughty Boy")
+		print("He's a Very Naughty Boy")
 	if touch.four:
-		print ("Blue or Yellow?")
+		print("Blue or Yellow?")
 
 except KeyboardInterrupt:
 	dock.stop()
 ```
 
+## Touch summary
 
-*Touch summary*
-*`if touch.one:` - looks for button 1 being pressed*
-*`if touch.two:` - looks for button 2 being pressed*
-*`if touch.three:` - looks for button 3 being pressed*
-*`if touch.four:` - looks for button 4 being pressed*
-
-
+* `if touch.one:` - looks for button 1 being pressed
+* `if touch.two:` - looks for button 2 being pressed
+* `if touch.three:` - looks for button 3 being pressed
+* `if touch.four:` - looks for button 4 being pressed

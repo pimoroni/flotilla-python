@@ -13,6 +13,7 @@ print(slider.position)
 ```
 
 In this example if the slider is above halfway (512) then it prints the word BIG, if it's below halfway it prints the word SMALL.
+
 ```python
 import flotilla
 import time
@@ -24,9 +25,9 @@ try:
   while True:
 	pos = int(slider.position)
 	if pos > 512:
-		print ("BIG")
+		print("BIG")
 	if 0 < pos < 512:
-		print ("SMALL")
+		print("SMALL")
 	time.sleep(1)
 
 except KeyboardInterrupt:
@@ -35,7 +36,8 @@ except KeyboardInterrupt:
 
 You can use the slider to control other modules by using `slider.position` as an input variable, although you might want to rename it something shorter like in the example above.
 
-*Slider summary*
-*`slider.position` - returns slider position between 0-1023*
+## Slider summary
+
+* `slider.position` - returns slider position between 0-1023
 
 

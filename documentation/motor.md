@@ -37,7 +37,8 @@ This would make the motor go at speed 20 in the opposite direction.
 
 There are some examples of controlling a motor with other flotilla modules in the flotilla examples directory.
 
-*Motor summary*
-*motor.set_speed() = set the running speed of the motor*
-*motor.update() = set the motor running*
-*motor.stop() = sets the speed to zero and updates*
+## Motor summary
+
+* motor.set_speed() = set the running speed of the motor
+* motor.update() = set the motor running
+* motor.stop() = sets the speed to zero and updates

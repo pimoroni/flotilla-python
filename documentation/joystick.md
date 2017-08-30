@@ -1,6 +1,7 @@
 ## Joystick module
 
 The joystick module has the ability to detect side to side movement of the stick (x), up and down movement of the stick (y), and a press of the button.
+
 First, don't forget to get the dock to recognise your module:
 
 `joystick = dock.first(flotilla.Joystick)`
@@ -24,6 +25,7 @@ print(joystick.y)
 ```
 
 If you find out that the bottom left is NOT (0,0) then it could be that you're happier holding the joystick the other way around (the default numbers have the wire at the top).
+
 If you want it to take readings with the wire at the bottom, add this line to the start of the program and it will change all the numbers for you.
 
 ```python
@@ -41,8 +43,8 @@ try:
 
 This lets you print BOOP on the screen every time you click the button.
 
-
 In this example the joystick says where it is on the coordinate grid every 5 seconds.
+
 ```python
 import flotilla
 import time
@@ -57,7 +59,3 @@ try:
 except KeyboardInterrupt:
 	dock.stop()
 ```
-
-
-
-
