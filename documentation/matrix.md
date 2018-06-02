@@ -17,3 +17,30 @@ A pixel can have a brightness between 0 (off) and 255 (fully on).
 * `matrix.set_pixel(x, y, brightness)` - set a single pixel on the matrix at x (0-7), y (0-7) with brightness (0-255)
 * `matrix.update()` - display your changes on the matrix
 * `matrix.clear()` - clear the matrix- you must call `update` for this to clear the display
+
+
+## Matrix advanced features
+
+* `matrix.invert()` - invert all pixel states
+* `matrix.full()` - invert `clear`
+* `matrix.flip(value)` - flips pixels horizontal if `True` (default) or vertical if `False`
+* `matrix.set_matrix('0x00040a1120408000')` - set display full matrix as hex in one call
+
+
+    pix = [
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    [0, 1, 1, 0, 1, 1, 0, 0],
+    [1, 1, 1, 1, 1, 1, 1, 0],
+    [1, 1, 1, 1, 1, 1, 1, 0],
+
+    [0, 1, 1, 1, 1, 1, 0, 0],
+    [0, 0, 1, 1, 1, 0, 0, 0],
+    [0, 0, 0, 1, 0, 0, 0, 0],
+    [0, 0, 0, 0, 0, 0, 0, 0],
+    ]
+
+* `matrix.set_matrix(pix)` - set display full matrix as nested list of bits in one call
+* `matrix.set_matrix([0, 0, 0, 60, 96, 124, 102, 124])` - set display full matrix as list of int in one call
+* `matrix.set_icon('A')` - set predefined icon from ascii font
+* `matrix.set_icon(key, font)` - set custom icon (`matrix.set_matrix` input) as provided by `font`
+* `matrix.pp()` - pretty print of display pixel
