@@ -14,10 +14,28 @@ In the new terminal window type the following and follow the instructions:
 curl -sS https://get.pimoroni.com/flotilla | bash
 ```
 
-## IMPORTANT 
+## IMPORTANT
 
 If you've installed Rockpool, you need to shut down the Flotilla Daemon before you start talking to the dock using the present python API:
 
 ```bash
 sudo service flotillad stop
+```
+
+## Generic python installing
+
+Download or clone this repository and follow the instructions:
+
+```bash
+cd flotilla-python
+pip install library
+```
+
+Now you'll be able to use Flotilla with python. Make sure your dock connected.
+
+```python
+>>> import flotilla
+>>> dock = flotilla.Client()
+>>> dock.ready
+True
 ```
