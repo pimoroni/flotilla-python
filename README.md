@@ -28,7 +28,7 @@ Download or clone this repository and follow the instructions:
 
 ```bash
 cd flotilla-python
-pip install library
+pip install ./library
 ```
 
 Now you'll be able to use Flotilla with python. Make sure your dock connected.
