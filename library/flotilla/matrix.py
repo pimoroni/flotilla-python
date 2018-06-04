@@ -1,5 +1,9 @@
 from .module import Module
 
+try:
+    x = long(1)
+except:
+    long = int
 
 class Matrix(Module):
     name = 'matrix'
