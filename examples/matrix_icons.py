@@ -55,33 +55,33 @@ try:
     ]
 
     for p in font.values():
-        print matrix.set_matrix(p).update().pp()
+        print(matrix.set_matrix(p).update().pp())
         time.sleep(1)
 
     for p in font:
-        print matrix.set_icon(p, font).update().pp()
+        print(matrix.set_icon(p, font).update().pp())
         time.sleep(1)
 
     for p in 'ABCDEFGHIJKLMNOPQRSTUVWXYZ' + ' ' + 'abcdefghijklmnopqrstuvwxyz' + '1234567890':
-        print matrix.set_icon(p).update().pp()
+        print(matrix.set_icon(p).update().pp())
         time.sleep(1)
 
-    print matrix.set_icon("\\").update().pp()
+    print(matrix.set_icon("\\").update().pp())
     time.sleep(1)
 
-    print matrix.set_icon("%").update().pp()
+    print(matrix.set_icon("%").update().pp())
     time.sleep(1)
-    print matrix.flip().update().pp()
+    print(matrix.flip().update().pp())
     time.sleep(1)
-    print matrix.flip(horizontal=False).update().pp()
+    print(matrix.flip(horizontal=False).update().pp())
     time.sleep(1)
 
-    print matrix.set_icon("smiley").update().pp()
+    print(matrix.set_icon("smiley").update().pp())
     time.sleep(1)
 
     for _ in range(10):
-        print matrix.invert().update().pp()
-        print ''
+        print(matrix.invert().update().pp())
+        print('')
         time.sleep(1)
 
     matrix.clear().update()
