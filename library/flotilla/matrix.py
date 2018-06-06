@@ -139,6 +139,10 @@ class Matrix(Module):
             self.pixels[abs(self.xstart - x)] &= ~(1 << abs(self.ystart - y))
         return self
 
+    def stop(self):
+        self.clear()
+        self.update()
+
     def update(self):
         self.send(self.pixels + [self.brightness])
         return self
