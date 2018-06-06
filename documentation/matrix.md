@@ -14,7 +14,7 @@ A pixel can have a brightness between 0 (off) and 255 (fully on).
 
 * `matrix.rotation(value)` - set the rotation of the matrix, either 0, 90, 180 or 270 degrees
 * `matrix.set_brightness` - set the brightness of the matrix from 0 (off) to 255 (full)
-* `matrix.set_pixel(x, y, brightness)` - set a single pixel on the matrix at x (0-7), y (0-7) with brightness (0-255)
+* `matrix.set_pixel(x, y, state)` - set a single pixel on the matrix at x (0-7), y (0-7) with state 0 (off) or 1 (on)
 * `matrix.update()` - display your changes on the matrix
 * `matrix.clear()` - clear the matrix- you must call `update` for this to clear the display
 
