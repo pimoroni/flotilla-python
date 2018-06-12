@@ -163,11 +163,17 @@ class Number(Module):
 
         self.digits[digit] = self._numbers[value]
 
+    def stop(self):
+        self.clear()
+        self.update()
+
     def update(self):
         self.send(self.digits + [self.colon, self.apostrophe, self.brightness])
 
     def clear(self):
         self.digits = [0] * 4
+        self.colon = 0
+        self.apostrophe = 0
         return self
 
     def set_colon(self, value):
