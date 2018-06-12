@@ -239,12 +239,21 @@ Try: kill {pid}""".format(pid=pid))
         self._serial_write("s {} {}".format(channel_index, data))
 
     def all(self, module_type):
-        return [module for module in self.available.values() if module.is_a(module_type)]
+        return [module for module in reversed(self._modules) if module.is_a(module_type)]
+
+    def nth(self, module_type, position=1):
+        for x in reversed(range(8)):
+            if self._modules[x].is_a(module_type):
+                if position == 1:
+                    return self._modules[x]
+                position -= 1
+        return NoModule()
 
     def first(self, module_type):
-        for module in self.available.values():
-            if module.is_a(module_type):
-                return module
+        return self.nth(module_type, position=1)
+
+    def second(self, module_type):
+        return self.nth(module_type, position=2)
 
     @property
     def channel_one(self):
