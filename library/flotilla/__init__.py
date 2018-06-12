@@ -238,9 +238,12 @@ Try: kill {pid}""".format(pid=pid))
             channel_index = self._channel_index_to_number(channel_index)
         self._serial_write("s {} {}".format(channel_index, data))
 
-    def first(self, type):
+    def all(self, module_type):
+        return [module for module in self.available.values() if module.is_a(module_type)]
+
+    def first(self, module_type):
         for module in self.available.values():
-            if module.is_a(type):
+            if module.is_a(module_type):
                 return module
 
     @property
