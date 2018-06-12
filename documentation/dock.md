@@ -43,3 +43,61 @@ else
 ```
 
 *to connect more than one module of the same type, see advanced use.
+
+## Advanced Commands
+
+### Get all modules of a specific type
+
+If you want to get all of the connected sliders, try:
+
+```python
+dock.all(flotilla.Slider)
+```
+
+### Get first, second or nth module of a specific type
+
+To find the nth most module (in order from left to right) of a specific type connected to your dock you can use `first`, `second` or `nth` like so:
+
+```python
+dock.first(flotilla.Number) # Select the first connected number
+dock.second(flotilla.Number) # Select the second connected number
+dock.nth(flotilla.Slider, 3) # Select the third connected slider
+```
+
+### Check if you've got the right module back
+
+Flotilla might return a `NoModule` object in cases where the right module is disconnected, or it might return a `Slider` when you expect a `Dial` if you request the module on a specific channel.
+
+Check the modules are the ones you expect with `is_a`:
+
+```python
+my_module = dock.channel_four()
+if my_module.is_a(flotilla.Slider):
+    print("Slider found, value: {}".format(my_module.position))
+else:
+    print("Oh no, can't find the slider!")
+```
+
+This allows you to write code that responds to changes in the connected modules.
+
+### Do something when a module is connected/disconnected
+
+If you want to run some code when a module is connected or disconnected you can use `on_connect` and `on_disconnect` and pass them a function, like so:
+
+```python
+def handle_connect(channel, module):
+    if module.is_a(flotilla.Joystick):
+        print("Yay! You successfully connected a joystick!")
+
+dock.on_connect(handle_connect)
+```
+
+Or using decorators:
+
+```python
+@dock.on_connect()
+def handle_connect(channel, module):
+    if module.is_a(flotilla.Slider):
+        print("Good job! You connected a slider!")
+```
+
