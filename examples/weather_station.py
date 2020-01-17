@@ -40,8 +40,8 @@ try:
         for module in dock.available.values():
             if module.is_a(flotilla.Weather):
                 temp = module.temperature
-                number_display.set_number(int(temp))
-                number_display.update()
+                number.set_number(int(temp))
+                number.update()
 
                 pressure = module.pressure
                 if pressure > 10150:
