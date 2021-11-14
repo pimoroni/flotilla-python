@@ -1,7 +1,12 @@
 ## RAINBOW
 
-The first thing about the Rainbow is that you can address the pixels individually. 
-Remember that numbering starts at zero, not one.
+In order to use your Rainbow, you'll need to make sure your dock recognizes it by adding the following line to your program:
+
+```
+rainbow = dock.first(flotilla.Rainbow)
+```
+
+With the Rainbow, you can address its pixels individually. Remember that numbering starts at zero, not one.
 
 ```python
 rainbow.set_pixel(0, 255, 255, 255)
@@ -19,40 +24,16 @@ rainbow.set_all(255, 255, 255)
 rainbow.update()
 ```
 
-You can also set the brightness of the pixels by adding a fifth parameter in the brackets, for example:
+The brightness is set globally by using a number from `0` (no light) to `255` (brightest).
 
 ```python
-rainbow.set_pixel(2, 255, 0, 255, 0.5)
-
-rainbow.update()
+rainbow.set_brightness(100)
 ```
-
-Would set the third pixel (pixel 2) to magenta at half brightness. 
-
-The value for brightness should be between 0.0 (dark) and 1.0 (full brightness). 
-
-It can be used in combination with the set all function, for example:
-
-```python
-rainbow.set_all (255, 255, 0, 1)
-
-rainbow.update()
-```
-
-Would set all the pixels to yellow at full brightness.
-
-You can set the brightness globally by using:
-
-```python
-rainbow.set_brightness(0.5)
-```
-
-which would set all pixels to half brightness for the remainder of the program.
-
 
 ## Rainbow summary
 
-* `set_pixel (red, green, blue, brightness)` - address individual pixels
-* `set_all (red, green, blue, brightness)` - address all pixels
-* `clear_all ()` - sets all pixels to off
+* `set_pixel (pixel, red, green, blue)` - address individual pixels
+* `set_all (red, green, blue)` - address all pixels
+* `set_brightness(brightness)` - set brightness using numbers from 0-255
 * `update()` - shows the pixels
+* `stop()` - clears all pixels
